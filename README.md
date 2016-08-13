@@ -1,7 +1,10 @@
 # ADAM
 ADAM - Ausbau der Digitalisierung im Anlagenmanagement
 
-Diese App ist dazu gedacht, eine rasche Übersicht über ADAM zu haben.
+
+<IMG SRC="https://noscio.eu/ADAM/adamlogo.png" ALT="ADAM_APP" WIDTH=100 HEIGHT=100>
+
+Diese App ist dazu gedacht, eine rasche Übersicht über die ADAM-API zu haben.
 ADAM ist eine API, mit welcher man den Status von Aufzügen und Rolltreppen in
 ganz Deutschland einsehen kann.
 
