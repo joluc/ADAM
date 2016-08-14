@@ -13,8 +13,12 @@
 {
     CLLocationManager *locationManager;
     
+    
 }
 @property UIActivityIndicatorView *loadingindicator;
+@property IBOutlet UIImageView *imageviewback;
+@property UIButton *datenschutz;
+
 -(void)activateloader;
 -(void)deactivateloader;
 

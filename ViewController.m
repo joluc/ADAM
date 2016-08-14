@@ -12,20 +12,29 @@
 #import "ADAM_MapView.h"
 #import "MBProgressHUD.h"
 #import "CheckConnection.h"
-
-
+#import "outrepasser.h"
 
 @interface ViewController ()<CLLocationManagerDelegate>
 
 @end
 UIButton *credits;
+ADAM_MapView *mapView;
+NSMutableDictionary *dictim;
+NSMutableArray *nummerext;
+NSMutableArray *stationlong;
+NSMutableDictionary *nummerbahn;
+ADAMerci *baguette;
+MBProgressHUD *hud;
 
 @implementation ViewController
+@synthesize datenschutz;
+
 
 - (void)viewDidLoad {
+    
+    
     [super viewDidLoad];
     [self startupcheck];
-    
 }
 -(void)startupcheck
 {
@@ -41,7 +50,7 @@ UIButton *credits;
     {
         
         NSTimer *timernew; // Kurzes Delay, dass sich das UI updaten kann
-        timernew = [NSTimer scheduledTimerWithTimeInterval:0.2 target:self selector:@selector(run_error) userInfo:nil repeats:NO];
+        timernew = [NSTimer scheduledTimerWithTimeInterval:0.3 target:self selector:@selector(run_error) userInfo:nil repeats:NO];
     }
 }
 -(void)runner
@@ -58,13 +67,69 @@ UIButton *credits;
     [credits.titleLabel setFont:[UIFont systemFontOfSize:self.view.frame.size.height/55]];
     [credits setTitleColor:[UIColor blueColor] forState:UIControlStateNormal];
     
-    [credits setTitle:(@"Daten bereitgestellt der Deutschen Bahn / ADAM") forState:UIControlStateNormal];
+    [credits setTitle:(@"Daten bereitgestellt von der Deutschen Bahn / ADAM") forState:UIControlStateNormal];
     
-    [MBProgressHUD showHUDAddedTo:self.view animated:YES];
+    
+    hud = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
+    hud.mode = MBProgressHUDModeIndeterminate;
+    hud.detailsLabel.text = (@"Lade Daten vom Server...");
+    
     
     NSTimer *timernew; // Kurzes Delay, dass sich das UI updaten kann
-    timernew = [NSTimer scheduledTimerWithTimeInterval:0.2 target:self selector:@selector(run_debut) userInfo:nil repeats:NO];
+    timernew = [NSTimer scheduledTimerWithTimeInterval:0.3 target:self selector:@selector(run_debut) userInfo:nil repeats:NO];
+    NSTimer *timernewnew; // Kurzes Delay, dass sich das UI updaten kann
+    timernewnew = [NSTimer scheduledTimerWithTimeInterval:0.2 target:self selector:@selector(testanother) userInfo:nil repeats:NO];
     
+//    http://www.bahnhof.de/bahnhof-de/Lorch__Wuertt_.html?hl=lorch
+}
+-(void)testanother
+{
+    NSString *urlstring;
+    urlstring = (@"https://noscio.eu/ADAM/stationsdaten.json");
+    
+    NSURL *url=[NSURL URLWithString:urlstring];
+    
+    NSMutableURLRequest *request = [[NSMutableURLRequest alloc] init];
+    [request setURL:url];
+    [request setHTTPMethod:@"GET"];
+    
+    NSError *error;
+    NSURLResponse *response;
+    NSData *urlData=[NSURLConnection sendSynchronousRequest:request returningResponse:&response error:&error];
+    
+    dictim = [self dicfromdata:urlData];
+    fullele = [dictim mutableCopy];
+    
+    nummerext = [dictim valueForKeyPath:@"Equipment"];
+    stationlong = [dictim valueForKeyPath:@"Ort"];
+    
+    nummerbahn = [NSMutableDictionary new];
+    int dreii = 0;
+    if (!error)
+    {
+        hud.detailsLabel.text = (@"Verarbeitung...");
+    }
+    for (NSString *key in nummerext) {
+        NSString *realkey;
+        realkey = [NSString stringWithFormat:@"%lld", key.longLongValue];
+        
+        [nummerbahn setValue:[stationlong objectAtIndex:dreii] forKey:realkey];
+        dreii++;
+    }
+    
+    NSLog(@"%@", nummerbahn);
+    
+    nummerbahnnow = [nummerbahn mutableCopy];
+    
+}
+-(NSMutableDictionary*)dicfromdata:(NSData*)responseData
+{
+    
+    NSError* error;
+    NSMutableDictionary* json = [NSJSONSerialization JSONObjectWithData:responseData options:kNilOptions error:&error];
+    NSLog(@"%@",json.description);
+    
+    return json;
 }
 -(void)run_error
 {
@@ -91,7 +156,7 @@ UIButton *credits;
     ADAMCom *com;
     com = [[ADAMCom alloc]init];
     
-    ADAMerci *baguette;
+    
     baguette = [[ADAMerci alloc]init];
     baguette = [com dictionary_fromADAM];
     
@@ -99,7 +164,7 @@ UIButton *credits;
     dictionary1 = [baguette dicforindex:2];
     NSLog(@"%@",dictionary1.description);
     
-    ADAM_MapView *mapView;
+    
     mapView = [[ADAM_MapView alloc]initWithFrame:self.view.frame];
     [self.view addSubview:mapView];
     mapView.viewc = (id)self;
@@ -109,7 +174,6 @@ UIButton *credits;
     
     [mapView setup];
     [self.view addSubview:credits];
-    UIButton *datenschutz;
     
     datenschutz = [[UIButton alloc]initWithFrame:CGRectMake(self.view.frame.size.width-self.view.frame.size.width/5, self.view.frame.size.height-15,self.view.frame.size.width/5, 10)];
     
@@ -122,7 +186,7 @@ UIButton *credits;
     [datenschutz.titleLabel setFont:[UIFont systemFontOfSize:self.view.frame.size.height/56]];
     [datenschutz setBackgroundColor:[UIColor whiteColor]];
     
-    [self.view addSubview:datenschutz];
+//    [self.view addSubview:datenschutz];
     
     
     if (![[NSUserDefaults standardUserDefaults]boolForKey:(@"privacy2")])
@@ -130,7 +194,28 @@ UIButton *credits;
         [self showprivacy];
         [[NSUserDefaults standardUserDefaults]setBool:YES forKey:(@"privacy2")];
     }
+    UIButton *ortung;
+//    ortung = [[UIButton alloc] initWithFrame:CGRectMake(self.view.frame.size.width-self.view.frame.size.width/10, self.view.frame.size.height-(35+self.view.frame.size.width/15),self.view.frame.size.width/10, self.view.frame.size.width/10)];
+    ortung = [[UIButton alloc] initWithFrame:CGRectMake(self.view.frame.size.width-50, self.view.frame.size.height-50,50, 50)];
     
+    [ortung setImage:[UIImage imageNamed:(@"smalladam.png")] forState:UIControlStateNormal];
+    [self.view addSubview:ortung];
+    ortung.imageView.contentMode = UIViewContentModeScaleAspectFit;
+    [ortung addTarget:self action:@selector(ortme) forControlEvents:UIControlEventPrimaryActionTriggered];
+    
+}
+-(void)ortme
+{
+    MKCoordinateRegion region;
+    MKCoordinateSpan span;
+    span.latitudeDelta = 0.05;
+    span.longitudeDelta = 0.05;
+    CLLocationCoordinate2D location;
+    location.latitude = mapView.map.userLocation.coordinate.latitude;
+    location.longitude = mapView.map.userLocation.coordinate.longitude;
+    region.span = span;
+    region.center = location;
+    [mapView.map setRegion:region animated:YES];
 }
 -(void)showprivacy
 {

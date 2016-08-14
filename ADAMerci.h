@@ -16,10 +16,13 @@
 @property NSMutableArray *geocoordY;
 @property NSMutableArray *state;
 @property NSMutableArray *stationnumber;
+@property NSMutableDictionary *stationnumberfornames;
+
 -(NSMutableDictionary*)dicforindex:(int)index;
 -(NSMutableArray*)coords;
 -(NSString*)statusforquipmentnumber:(NSString*)ID;
 -(NSString*)typeforquipmentnumber:(NSString*)ID;
+-(NSString*)desforquipmentnumber:(NSString*)ID;
 
 
 @end

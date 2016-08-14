@@ -6,7 +6,9 @@
 //  Copyright © 2016 NOSCIO. All rights reserved.
 //
 
+
 #import "AppDelegate.h"
+#import "outrepasser.h"
 
 @interface AppDelegate ()
 
@@ -17,6 +19,8 @@
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     // Override point for customization after application launch.
+    nummerbahnnow = [[NSMutableDictionary alloc]init];
+    
     return YES;
 }
 
@@ -40,6 +44,12 @@
 
 - (void)applicationWillTerminate:(UIApplication *)application {
     // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
+}
++ (void)initialize {
+    // Set user agent (the only problem is that we can't modify the User-Agent later in the program)
+    NSDictionary *dictionnary = [[NSDictionary alloc] initWithObjectsAndKeys:@"ADAM_by_Noscio_1.3", @"UserAgent", nil];
+    [[NSUserDefaults standardUserDefaults] registerDefaults:dictionnary];
+    //only under MRC do we release [dictionnary release];
 }
 
 @end

@@ -25,7 +25,7 @@ ADAMerci *merci;
     
     NSMutableDictionary *dicti;
     dicti = [self dicfromdata:urlData];
-
+    
     
     NSMutableArray *equip = [dicti valueForKeyPath:@"equipmentnumber"];
     NSMutableArray *type = [dicti valueForKeyPath:@"type"];

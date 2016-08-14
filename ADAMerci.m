@@ -92,6 +92,33 @@
     
     return state_;
 }
+-(NSString*)desforquipmentnumber:(NSString*)ID
+{
+    //    NSLog(@"LOOKUP: %@",ID);
+    
+    long longlong;
+    longlong = ID.longLongValue;
+    //    NSLog(@"%ld",longlong);
+    NSNumber *number;
+    number = [NSNumber numberWithLong:ID.longLongValue];
+    //    NSLog(@"%@",number);
+    
+    int value = (int)[_description_ indexOfObject:number];
+    NSLog(@"is on Index: %d",value);
+    
+    if (value == NSNotFound)
+    {
+        return (@"Keine Beschreibung");
+    }
+    
+    NSString *state_;
+    state_ = [_type objectAtIndex:value];
+    //    NSLog(@"ID: %@",ID);
+    //    NSLog(@"is marked as %@",state_);
+    
+    
+    return state_;
+}
 -(NSString*)typeforquipmentnumber:(NSString*)ID
 {
     //    NSLog(@"LOOKUP: %@",ID);
