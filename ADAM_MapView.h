@@ -11,14 +11,14 @@
 #import "ADAMerci.h"
 #import "ViewController.h"
 
-
+///Ganz wichtiges Ding. Da ist das Interfacezeug drauf
 @interface ADAM_MapView : UIView <MKMapViewDelegate>
 
 @property NSMutableArray *coords;
 @property ADAMerci *fromage;
 @property MKMapView *map;
 @property ViewController *viewc;
-@property(nonatomic, retain) CLLocationManager *locationManager;
+@property(nonatomic, retain) CLLocationManager *locationManager; // Ich hasse dich
 
 -(void)setup;
 

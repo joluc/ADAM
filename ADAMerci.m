@@ -5,12 +5,11 @@
 //  Created by Jonathan Lucas Fritz on 12.08.16.
 //  Copyright © 2016 NOSCIO. All rights reserved.
 //
-
 #import "ADAMerci.h"
 #import <MapKit/MapKit.h>
 
 
-@implementation ADAMerci
+@implementation ADAMerci // Ganz wichtiges Teil
 
 //@property NSMutableArray *equip;
 //@property NSMutableArray *type;
@@ -20,8 +19,10 @@
 //@property NSMutableArray *state;
 //@property NSMutableArray *stationnumber;
 
+///Gibt ein Dictionarie zurück mit den Werten aus den Arrays welche auf dem jeweiligen Index liegen. Umständliche Lösung! Aber klappt!
 -(NSMutableDictionary*)dicforindex:(int)index
 {
+    
     NSMutableDictionary *dictionaryforindex;
     
     dictionaryforindex = [NSMutableDictionary dictionaryWithObjectsAndKeys:
@@ -35,7 +36,7 @@
     
     return dictionaryforindex;
 }
--(NSMutableArray*)coords
+-(NSMutableArray*)coords // Hier werden die einzelnen Koordinaten kombiniert und in CLLocationdinger umgewandelt
 {
     
     int drei;
@@ -70,7 +71,7 @@
     
     return geocoords;
 }
--(NSString*)statusforquipmentnumber:(NSString*)ID
+-(NSString*)statusforquipmentnumber:(NSString*)ID // Hier wird für die ID welche sich auch der annotation subtitle befindet ein Status des Aufzuges ausgegeben
 {
 //    NSLog(@"LOOKUP: %@",ID);
     
@@ -92,7 +93,7 @@
     
     return state_;
 }
--(NSString*)desforquipmentnumber:(NSString*)ID
+-(NSString*)desforquipmentnumber:(NSString*)ID // Hier kann man eine Beschreibung ausgeben... Allerdings fehlt die leider relativ oft :(
 {
     //    NSLog(@"LOOKUP: %@",ID);
     
@@ -104,7 +105,7 @@
     //    NSLog(@"%@",number);
     
     int value = (int)[_description_ indexOfObject:number];
-    NSLog(@"is on Index: %d",value);
+//    NSLog(@"is on Index: %d",value);
     
     if (value == NSNotFound)
     {
@@ -119,7 +120,7 @@
     
     return state_;
 }
--(NSString*)typeforquipmentnumber:(NSString*)ID
+-(NSString*)typeforquipmentnumber:(NSString*)ID // Und hiermit kann man erkennen, ob es eine Rolltreppe ist ( von denen es aktuell 2 gibt die eingetragen sind ) oder eine der hunderten Aufzüge 
 {
     //    NSLog(@"LOOKUP: %@",ID);
     

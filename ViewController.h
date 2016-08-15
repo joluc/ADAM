@@ -18,6 +18,8 @@
 @property UIActivityIndicatorView *loadingindicator;
 @property IBOutlet UIImageView *imageviewback;
 @property UIButton *datenschutz;
+@property UIButton *credits;
+
 
 -(void)activateloader;
 -(void)deactivateloader;

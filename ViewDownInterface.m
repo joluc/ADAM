@@ -10,10 +10,12 @@
 #import "NosFrame.h"
 #import "outrepasser.h"
 
-
+//ist eigentlich alles selbsterklärend.
 @implementation ViewDownInterface
 NosFrame *framer;
 UILabel *bigg;
+UIImageView *imageview;
+UIActivityIndicatorView *loadingimage;
 
 int actindex;
 
@@ -36,13 +38,12 @@ int actindex;
     action = [UIAlertAction actionWithTitle:(@"Schließen") style:UIAlertActionStyleDefault handler:nil];
     [control addAction:action];
     [self.mapviewadam.viewc presentViewController:control animated:YES completion:nil];
-    
-    
 }
 -(void)sethiddennow
 {
     [bigg removeFromSuperview];
-    
+    [imageview removeFromSuperview];
+    [loadingimage removeFromSuperview];
     self.hidden = YES;
 }
 -(void)loadforID:(NSString *)ID
@@ -65,7 +66,7 @@ int actindex;
 //        clean = [ID stringByReplacingOccurrencesOfString:(@"Rolltreppe bei Station: ") withString:(@"")];
 //    }
 //    
-    NSLog(@"%@",ID);
+//    NSLog(@"%@",ID);
     
     [self typeforquipmentnumber:ID];
     
@@ -101,23 +102,85 @@ int actindex;
 //    NSLog(@"%@",self.bonjour.stationnumberfornames.description);
 //    
     
+    imageview = [[UIImageView alloc]initWithFrame:self.frame];
+    [self.mapviewadam addSubview:imageview];
+    
+    loadingimage = [[UIActivityIndicatorView alloc]initWithFrame:self.frame];
+    loadingimage.activityIndicatorViewStyle = UIActivityIndicatorViewStyleGray;
+    loadingimage.backgroundColor = [UIColor whiteColor];
+    [self.mapviewadam addSubview:loadingimage];
+    [loadingimage startAnimating];
+    
     bigg = [[UILabel alloc]initWithFrame:self.frame];
-    [bigg setFont:[UIFont systemFontOfSize:self.frame.size.height/3]];
+    [bigg setFont:[UIFont systemFontOfSize:self.frame.size.height/5]];
     bigg.textAlignment = NSTextAlignmentCenter;
     bigg.text = [nummerbahnnow valueForKey:ID];
-    
-    
+    bigg.numberOfLines = 2;
+    bigg.alpha = 0.6;
     
     bigg.backgroundColor = [UIColor whiteColor];
     [self.mapviewadam addSubview:bigg];
-    NSLog(@"%@",nameofstation_);
+    
+//    NSLog(@"%@",nameofstation_);
+}
+-(void)setimageurl:(NSString *)url
+{
+    [self loadImage:[NSURL URLWithString:url]];
+    
+}
+- (void)loadImage:(NSURL *)imageURL
+{
+    NSOperationQueue *queue = [NSOperationQueue new];
+    NSInvocationOperation *operation = [[NSInvocationOperation alloc]
+                                        initWithTarget:self
+                                        selector:@selector(requestRemoteImage:)
+                                        object:imageURL];
+    [queue addOperation:operation];
+}
+
+- (void)requestRemoteImage:(NSURL *)imageURL
+{
+    NSLog(@"%@",imageURL.absoluteString);
+    
+    NSData *imageData = [[NSData alloc] initWithContentsOfURL:imageURL];
+    UIImage *image = [[UIImage alloc] initWithData:imageData];
+    
+    [self performSelectorOnMainThread:@selector(placeImageInUI:) withObject:image waitUntilDone:YES];
+}
+
+- (void)placeImageInUI:(UIImage *)image
+{
+    if (![self image:[UIImage imageNamed:(@"streetview-1.jpeg")] isEqualTo:image])
+    {
+    [imageview setImage:image];
+    imageview.contentMode = UIViewContentModeScaleToFill;
+        [loadingimage stopAnimating];
+        [loadingimage removeFromSuperview];
+        loadingimage = nil;
+    }
+    else
+    {
+        printf("\n Image is same.");
+        imageview.image = nil;
+        imageview = nil;
+        [loadingimage stopAnimating];
+        [loadingimage removeFromSuperview];
+        loadingimage = nil;
+    }
+}
+- (BOOL)image:(UIImage *)image1 isEqualTo:(UIImage *)image2
+{
+    NSData *data1 = UIImagePNGRepresentation(image1);
+    NSData *data2 = UIImagePNGRepresentation(image2);
+    
+    return [data1 isEqual:data2];
 }
 -(NSMutableDictionary*)dicfromdata:(NSData*)responseData
 {
     
     NSError* error;
     NSMutableDictionary* json = [NSJSONSerialization JSONObjectWithData:responseData options:kNilOptions error:&error];
-    NSLog(@"%@",json.description);
+//    NSLog(@"%@",json.description);
     
     return json;
 }

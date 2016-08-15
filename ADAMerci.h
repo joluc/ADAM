@@ -17,6 +17,12 @@
 @property NSMutableArray *state;
 @property NSMutableArray *stationnumber;
 @property NSMutableDictionary *stationnumberfornames;
+/**
+ *  @author         Jonathan Fritz
+ *  @version        0.5
+ *   ADAMerci wird aus ADAMCom gebildet und beinhaltet alle Informationen welche für die Anzeige des Status und das Lokalisieren der Aufzüge und Rolltreppen benötigt werden.
+ *
+ */
 
 -(NSMutableDictionary*)dicforindex:(int)index;
 -(NSMutableArray*)coords;

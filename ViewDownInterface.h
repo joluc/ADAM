@@ -18,6 +18,7 @@
 -(void)setup;
 -(void)loadforID:(NSString*)ID;
 -(void)sethiddennow;
+-(void)setimageurl:(NSString*)url;
 
 
 @end

@@ -10,6 +10,14 @@
 #import "AppDelegate.h"
 #import "outrepasser.h"
 
+// Hallo!
+// Du darfst den Code von mir gerne benutzen...
+// Aber bitte beachte die CCBYNC 4.0 Lizenz
+// Kommerzielle Nutzung nur mit meiner ausdrücklichen Erlaubnis!
+// Ich bin jederzeit unter jonathanlucas98@web.de erreichbar.
+// Du bist auch immer willkommen hier mitzuhelfen.
+
+
 @interface AppDelegate ()
 
 @end
@@ -47,7 +55,7 @@
 }
 + (void)initialize {
     // Set user agent (the only problem is that we can't modify the User-Agent later in the program)
-    NSDictionary *dictionnary = [[NSDictionary alloc] initWithObjectsAndKeys:@"ADAM_by_Noscio_1.3", @"UserAgent", nil];
+    NSDictionary *dictionnary = [[NSDictionary alloc] initWithObjectsAndKeys:@"ADAM_by_Noscio_1.3", @"UserAgent", nil]; //Einen coolen User-Agent setzen
     [[NSUserDefaults standardUserDefaults] registerDefaults:dictionnary];
     //only under MRC do we release [dictionnary release];
 }

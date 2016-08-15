@@ -17,7 +17,6 @@
 @interface ViewController ()<CLLocationManagerDelegate>
 
 @end
-UIButton *credits;
 ADAM_MapView *mapView;
 NSMutableDictionary *dictim;
 NSMutableArray *nummerext;
@@ -28,25 +27,26 @@ MBProgressHUD *hud;
 
 @implementation ViewController
 @synthesize datenschutz;
-
+@synthesize credits;
 
 - (void)viewDidLoad {
     
     
     [super viewDidLoad];
-    [self startupcheck];
+    [self startupcheck]; //Überprüfe die Verbindung
 }
+///Verbindung überprüfen und dann starten oder Fehlermeldeung ausgeben
 -(void)startupcheck
 {
     CheckConnection *checker;
     checker = [[CheckConnection alloc]init];
     
-    if ([checker checkfnc])
+    if ([checker checkfnc]) //Wenn eine Verbindung vorhanden ist
     {
         [self runner];
         
     }
-    if (![checker checkfnc])
+    if (![checker checkfnc]) //Wenn keine Verbindung vorhanden ist
     {
         
         NSTimer *timernew; // Kurzes Delay, dass sich das UI updaten kann
@@ -56,23 +56,24 @@ MBProgressHUD *hud;
 -(void)runner
 {
     
-    locationManager = [[CLLocationManager alloc] init];
+    locationManager = [[CLLocationManager alloc] init]; // Mache dieses blöde Location Manager Zeugs
     locationManager.delegate = self;
-    locationManager.desiredAccuracy = kCLLocationAccuracyBest;
+    locationManager.desiredAccuracy = kCLLocationAccuracyNearestTenMeters;
     
-    [locationManager startUpdatingLocation];
+    [locationManager startUpdatingLocation]; //Starte Location Updates
     
-    credits = [[UIButton alloc]initWithFrame:CGRectMake(0, 10, self.view.frame.size.width, 10)];
+    credits = [[UIButton alloc]initWithFrame:CGRectMake(0, 10, self.view.frame.size.width, 10)]; // Credits Button erstellen
     [credits setBackgroundColor:[UIColor clearColor]];
     [credits.titleLabel setFont:[UIFont systemFontOfSize:self.view.frame.size.height/55]];
     [credits setTitleColor:[UIColor blueColor] forState:UIControlStateNormal];
     
-    [credits setTitle:(@"Daten bereitgestellt von der Deutschen Bahn / ADAM") forState:UIControlStateNormal];
+    [credits setTitle:(@"Daten bereitgestellt von der Deutschen Bahn / ADAM\nFreepik | Creative Commons BY 3.0 | CC 3.0 BY") forState:UIControlStateNormal]; // Text für Credits setzen
+    credits.titleLabel.numberOfLines = 2; // Das Ding hat 2 Linien
     
     
-    hud = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
+    hud = [MBProgressHUD showHUDAddedTo:self.view animated:YES]; //HUD aktivieren und Objekt abgreifen für Modifikationen
     hud.mode = MBProgressHUDModeIndeterminate;
-    hud.detailsLabel.text = (@"Lade Daten vom Server...");
+    hud.detailsLabel.text = (@"Lade Daten vom Server..."); //Schönen Text beim HUD setzen
     
     
     NSTimer *timernew; // Kurzes Delay, dass sich das UI updaten kann
@@ -80,12 +81,18 @@ MBProgressHUD *hud;
     NSTimer *timernewnew; // Kurzes Delay, dass sich das UI updaten kann
     timernewnew = [NSTimer scheduledTimerWithTimeInterval:0.2 target:self selector:@selector(testanother) userInfo:nil repeats:NO];
     
-//    http://www.bahnhof.de/bahnhof-de/Lorch__Wuertt_.html?hl=lorch
+//    http://www.bahnhof.de/bahnhof-de/Lorch__Wuertt_.html?hl=lorch // Ignorieren
+    [credits addTarget:self action:@selector(showcreditalert) forControlEvents:UIControlEventPrimaryActionTriggered]; // Die Action für den Credits Button setzen
+    
+    credits.titleLabel.textAlignment = NSTextAlignmentCenter; //Text Aligment setzen
+//    credits.titleLabel.font = [UIFont boldSystemFontOfSize:credits.titleLabel.font.pointSize];
+    
 }
+///Die Methode hat nen blöden Namen weil ich was testen wollte, hab aber keine Lust das zu ändern - funktioniert jetzt ja
 -(void)testanother
 {
     NSString *urlstring;
-    urlstring = (@"https://noscio.eu/ADAM/stationsdaten.json");
+    urlstring = (@"https://noscio.eu/ADAM/stationsdaten.json"); //Hier liegen die Aufzugsdaten
     
     NSURL *url=[NSURL URLWithString:urlstring];
     
@@ -97,11 +104,11 @@ MBProgressHUD *hud;
     NSURLResponse *response;
     NSData *urlData=[NSURLConnection sendSynchronousRequest:request returningResponse:&response error:&error];
     
-    dictim = [self dicfromdata:urlData];
+    dictim = [self dicfromdata:urlData]; //Aufzugsdaten in Dictionary schieben
     fullele = [dictim mutableCopy];
     
-    nummerext = [dictim valueForKeyPath:@"Equipment"];
-    stationlong = [dictim valueForKeyPath:@"Ort"];
+    nummerext = [dictim valueForKeyPath:@"Equipment"]; //Alle Equip abgreifen
+    stationlong = [dictim valueForKeyPath:@"Ort"]; // Alle Orte abgreifen
     
     nummerbahn = [NSMutableDictionary new];
     int dreii = 0;
@@ -113,13 +120,13 @@ MBProgressHUD *hud;
         NSString *realkey;
         realkey = [NSString stringWithFormat:@"%lld", key.longLongValue];
         
-        [nummerbahn setValue:[stationlong objectAtIndex:dreii] forKey:realkey];
+        [nummerbahn setValue:[stationlong objectAtIndex:dreii] forKey:realkey]; // Jetzt ein Dictionary erstellen, wo ich anhand der Equipmentnummer den Ort rauskrieg
         dreii++;
     }
     
-    NSLog(@"%@", nummerbahn);
+//    NSLog(@"%@", nummerbahn);
     
-    nummerbahnnow = [nummerbahn mutableCopy];
+    nummerbahnnow = [nummerbahn mutableCopy]; // Und das ganze global schalten. Finito!
     
 }
 -(NSMutableDictionary*)dicfromdata:(NSData*)responseData
@@ -127,10 +134,11 @@ MBProgressHUD *hud;
     
     NSError* error;
     NSMutableDictionary* json = [NSJSONSerialization JSONObjectWithData:responseData options:kNilOptions error:&error];
-    NSLog(@"%@",json.description);
+//    NSLog(@"%@",json.description);
     
     return json;
 }
+///Fehler wegen Internet anzeigen
 -(void)run_error
 {
     UIAlertController *control;
@@ -141,40 +149,38 @@ MBProgressHUD *hud;
                          style:UIAlertActionStyleDefault
                          handler:^(UIAlertAction * action)
                          {
-                             [self startupcheck];
+                             [self startupcheck]; // Nochmal StartupCheck durchlaufen lassen
                          }];
     [control addAction:ok];
     
     
     [self presentViewController:control animated:YES completion:nil];
 }
+///Hier liegt das Herz der ganze Sache, wenn das nicht ausgeführt wird geht gar nichts
 -(void)run_debut
 {
-    _loadingindicator = [[UIActivityIndicatorView alloc]initWithFrame:self.view.frame];
+    _loadingindicator = [[UIActivityIndicatorView alloc]initWithFrame:self.view.frame]; //Ladeding initializieren
     [self activateloader];
     
     ADAMCom *com;
-    com = [[ADAMCom alloc]init];
+    com = [[ADAMCom alloc]init]; // ADAMCom vorbereiten
     
     
-    baguette = [[ADAMerci alloc]init];
+    baguette = [[ADAMerci alloc]init]; //Und das ADAMerci vorbereiten
     baguette = [com dictionary_fromADAM];
     
-    NSMutableDictionary *dictionary1;
-    dictionary1 = [baguette dicforindex:2];
-    NSLog(@"%@",dictionary1.description);
     
-    
-    mapView = [[ADAM_MapView alloc]initWithFrame:self.view.frame];
+    mapView = [[ADAM_MapView alloc]initWithFrame:self.view.frame]; // Jetzt kommt die ADAM_MapView!
     [self.view addSubview:mapView];
     mapView.viewc = (id)self;
-    mapView.fromage = baguette;
+    mapView.fromage = baguette; // Brot mit Käse
     
     [self.view addSubview:mapView];
     
-    [mapView setup];
+    [mapView setup]; // aufsetzen
     [self.view addSubview:credits];
     
+    // Hier kommt jetzt erstmal UI Gedöns
     datenschutz = [[UIButton alloc]initWithFrame:CGRectMake(self.view.frame.size.width-self.view.frame.size.width/5, self.view.frame.size.height-15,self.view.frame.size.width/5, 10)];
     
     
@@ -188,7 +194,7 @@ MBProgressHUD *hud;
     
 //    [self.view addSubview:datenschutz];
     
-    
+    //Datenschutzvereinbarung anzeigen wenn noch nicht geschehen
     if (![[NSUserDefaults standardUserDefaults]boolForKey:(@"privacy2")])
     {
         [self showprivacy];
@@ -202,8 +208,42 @@ MBProgressHUD *hud;
     [self.view addSubview:ortung];
     ortung.imageView.contentMode = UIViewContentModeScaleAspectFit;
     [ortung addTarget:self action:@selector(ortme) forControlEvents:UIControlEventPrimaryActionTriggered];
+    // Das wars!
+    printf("\n UI Bereit");
+    
     
 }
+///Creditauswahl
+-(void)showcreditalert
+{
+    UIAlertController *controller;
+    controller = [UIAlertController alertControllerWithTitle:(@"Credits") message:(@"Danke an alle.") preferredStyle:UIAlertControllerStyleAlert];
+    
+    UIAlertAction* db = [UIAlertAction actionWithTitle:(@"Deutsche Bahn (DB)") style:UIAlertActionStyleDefault
+                                               handler:^(UIAlertAction * action) {
+                                                   [[UIApplication sharedApplication]openURL:[NSURL URLWithString:(@"http://data.deutschebahn.com")]];
+                                               }];
+    UIAlertAction* freep = [UIAlertAction actionWithTitle:(@"Freepik | Flaticon") style:UIAlertActionStyleDefault
+                                                  handler:^(UIAlertAction * action) {
+                                                      [[UIApplication sharedApplication]openURL:[NSURL URLWithString:(@"http://www.freepik.com")]];
+                                                  }];
+    UIAlertAction* noscio = [UIAlertAction actionWithTitle:(@"Entwickelt von Jonathan Fritz") style:UIAlertActionStyleDefault
+                                                   handler:^(UIAlertAction * action) {
+                                                       [[UIApplication sharedApplication]openURL:[NSURL URLWithString:(@"https://noscio.eu")]];
+                                                   }];
+    UIAlertAction* close = [UIAlertAction actionWithTitle:(@"Schließen") style:UIAlertActionStyleDefault
+                                                   handler:^(UIAlertAction * action) {
+                                                       
+                                                   }];
+    
+    [controller addAction:db];
+    [controller addAction:freep];
+    [controller addAction:noscio];
+    [controller addAction:close];
+    
+    [self presentViewController:controller animated:YES completion:nil];
+}
+///Userlocation zentrieren
 -(void)ortme
 {
     MKCoordinateRegion region;
@@ -217,6 +257,7 @@ MBProgressHUD *hud;
     region.center = location;
     [mapView.map setRegion:region animated:YES];
 }
+///Datenschutzcontroller anzeigen
 -(void)showprivacy
 {
     UIAlertController *priv;
@@ -227,27 +268,29 @@ MBProgressHUD *hud;
     [self presentViewController:priv animated:YES completion:nil];
     
 }
+///Das muss man unbedingt ausschalten, das sieht sonst so unfassbar scheiße aus
 -(BOOL)prefersStatusBarHidden
 {
     return YES;
 }
--(MKAnnotationView*) returnPointView: (CLLocationCoordinate2D) location andTitle: (NSString*) title andColor: (int) color{
-    /*Method that acts as a point-generating machine. Takes the parameters of the location, the title, and the color of the
-     pin, and it returns a view that holds the pin with those specified details*/
-    
-    printf("\n Working");
-    
-    
-    MKPointAnnotation *resultPin = [[MKPointAnnotation alloc] init];
-    MKPinAnnotationView *result = [[MKPinAnnotationView alloc] initWithAnnotation:resultPin reuseIdentifier:Nil];
-    [resultPin setCoordinate:location];
-    resultPin.title = title;
-    result.pinTintColor = [UIColor greenColor];
-    
-    return result;
-    
-}
+//-(MKAnnotationView*) returnPointView: (CLLocationCoordinate2D) location andTitle: (NSString*) title andColor: (int) color{
+//    /*Method that acts as a point-generating machine. Takes the parameters of the location, the title, and the color of the
+//     pin, and it returns a view that holds the pin with those specified details*/
+//    
+//    printf("\n Working");
+//    
+//    
+//    MKPointAnnotation *resultPin = [[MKPointAnnotation alloc] init];
+//    MKPinAnnotationView *result = [[MKPinAnnotationView alloc] initWithAnnotation:resultPin reuseIdentifier:Nil];
+//    [resultPin setCoordinate:location];
+//    resultPin.title = title;
+//    result.pinTintColor = [UIColor greenColor];
+//    
+//    return result;
+//    
+//}
 
+// 2 unnütze Methoden
 -(void)activateloader
 {
     
@@ -256,9 +299,11 @@ MBProgressHUD *hud;
 {
     
 }
+
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
+    printf("\n Memory Warning erhalten. Dein Gerät ist scheiße"); //Nutzer beleidigen weil ich nicht effizient (genug) programmiert habe
+    
 }
 
 @end

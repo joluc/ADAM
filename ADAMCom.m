@@ -7,10 +7,11 @@
 //
 
 #import "ADAMCom.h"
-#define URL @"https://adam.noncd.db.de/api/v1.0/facilities"
+#define URL @"https://adam.noncd.db.de/api/v1.0/facilities" //Hier ist die API der Bahn
 
 @implementation ADAMCom
 ADAMerci *merci;
+///Gibt ein ADAMerci-Objekt zurück
 -(ADAMerci*)dictionary_fromADAM
 {
     NSURL *url=[NSURL URLWithString:URL];
@@ -36,9 +37,10 @@ ADAMerci *merci;
     NSMutableArray *stationnumber = [dicti valueForKeyPath:(@"stationnumber")];
     
     
-     // ADAMerci als Datasource mit den einzelnen Werten -
+    // ADAMerci als Datasource mit den einzelnen Werten -
     // so umgehe ich das Problem mit den unbenannten Arrays!
-    // Abgerufen werden dann die Geocoordinaten
+    // Abgerufen wird das dann anhand von dem Index, der mit
+    // der Equipmentnummer festgestellt wird
     
     merci = [[ADAMerci alloc]init];
     merci.equip = [equip mutableCopy];
@@ -49,6 +51,19 @@ ADAMerci *merci;
     merci.state = [state mutableCopy];
     merci.stationnumber = [stationnumber mutableCopy];
     
+    equip = nil;
+    type = nil;
+    description = nil;
+    geocoordX = nil;
+    geocoordY = nil;
+    state = nil;
+    stationnumber = nil;
+    
+    
+//    7.590019933
+//    50.358767133
+//    AIzaSyAfN0znfkVve3HM5itywturlxOpF2Rl9FA KEY
+//    https://maps.googleapis.com/maps/api/streetview?size=600x300&location=46.414382,10.013988&heading=151.78&pitch=-0.76&key=
     return merci;
     
 }
@@ -57,7 +72,7 @@ ADAMerci *merci;
     
     NSError* error;
     NSMutableDictionary* json = [NSJSONSerialization JSONObjectWithData:responseData options:kNilOptions error:&error];
-    NSLog(@"%@",json.description);
+//    NSLog(@"%@",json.description); // Encoding zu JSON Log
     
     return json;
 }

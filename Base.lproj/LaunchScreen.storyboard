@@ -17,7 +17,7 @@
                         <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <imageView opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleAspectFit" image="adamlogo.png" translatesAutoresizingMaskIntoConstraints="NO" id="eUp-qv-ABw">
+                            <imageView opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleAspectFit" image="adamonly.png" translatesAutoresizingMaskIntoConstraints="NO" id="eUp-qv-ABw">
                                 <rect key="frame" x="131" y="150" width="338" height="300"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="338" id="K8N-3Z-hD7"/>
@@ -38,6 +38,6 @@
         </scene>
     </scenes>
     <resources>
-        <image name="adamlogo.png" width="1024" height="1024"/>
+        <image name="adamonly.png" width="500" height="500"/>
     </resources>
 </document>
