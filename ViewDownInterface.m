@@ -114,7 +114,10 @@ int actindex;
     bigg = [[UILabel alloc]initWithFrame:self.frame];
     [bigg setFont:[UIFont systemFontOfSize:self.frame.size.height/5]];
     bigg.textAlignment = NSTextAlignmentCenter;
-    bigg.text = [nummerbahnnow valueForKey:ID];
+    if ([nummerbahnnow valueForKey:ID])
+    {
+        bigg.text = [nummerbahnnow valueForKey:ID];
+    }
     bigg.numberOfLines = 2;
     bigg.alpha = 0.6;
     

@@ -1,3 +1,4 @@
+
 //
 //  ADAM_MapView.m
 //  ADAM by Noscio
@@ -10,19 +11,30 @@
 #import "MBProgressHUD.h"
 #import "ViewDownInterface.h"
 #import "outrepasser.h"
+#import "ADAMAnnotation.h"
+#import "MarqueeLabel.h"
+
 
 BOOL updated;
 BOOL loadedonce;
 ViewDownInterface *interface;
 MKCoordinateRegion oldregion;
-UIImage *redelevator;
-UIImage *greenelevator;
+MKCoordinateRegion startregion;
 
-@implementation ADAM_MapView 
+UIImage *redelevator;
+UIImage *bredelevator;
+UIImage *greenelevator;
+UIImage *bgreenelevator;
+
+@implementation ADAM_MapView
+
 -(void)setup
 {
-    redelevator = [self imageWithImage:[UIImage imageNamed:@"elevatorinactive.png"] scaledToSize:CGSizeMake(8, 8)]; // Ich dachte, wenn ich die Bilder einmal so speichere kann ich sie effizienter aufrufen....
-    greenelevator = [self imageWithImage:[UIImage imageNamed:@"elevatoractive.png"] scaledToSize:CGSizeMake(8, 8)]; // same
+    bredelevator = [self imageWithImage:[UIImage imageNamed:@"elevatorinactive.png"] scaledToSize:CGSizeMake(32, 32)];
+    bgreenelevator = [self imageWithImage:[UIImage imageNamed:@"elevatoractive.png"] scaledToSize:CGSizeMake(32, 32)];
+    
+    redelevator = [self imageWithImage:[UIImage imageNamed:@"elevatorinactive.png"] scaledToSize:CGSizeMake(16, 16)]; // Ich dachte, wenn ich die Bilder einmal so speichere kann ich sie effizienter aufrufen....
+    greenelevator = [self imageWithImage:[UIImage imageNamed:@"elevatoractive.png"] scaledToSize:CGSizeMake(16, 16)]; // same
    
     // Irgendwelche Kontrolldinger
     loadedonce = NO;
@@ -60,6 +72,10 @@ UIImage *greenelevator;
     [_map setZoomEnabled:YES];
     [_map setScrollEnabled:YES];
     [_map setPitchEnabled:YES];
+    [_map setShowsCompass:NO];
+    [_map setShowsTraffic:NO];
+    
+    [_map setTintColor:[UIColor blackColor]];
     
     _map.delegate = (id)self;
     if (userl)
@@ -73,6 +89,8 @@ UIImage *greenelevator;
     
     int drei;
     drei = 0; // Übrigens, die counter heißen bei mir fast immer irgendwas mit drei ^^
+    
+    
     
     for (NSObject *coordinate2 in geos) // eine for schleife um die latitude und die longitude in ein
     {
@@ -100,6 +118,11 @@ UIImage *greenelevator;
         point.title = [_fromage.type objectAtIndex:drei]; // Titel setzen
         
         // Übersetzen
+        if (!drei)
+        {
+            printf("\n Es liegt ein Fehler vor!");
+            point.subtitle = (@"10009296");
+        }
         if ([point.title isEqualToString:(@"ELEVATOR")])
         {
             NSString *creator;
@@ -123,6 +146,7 @@ UIImage *greenelevator;
         drei++;
     }
     
+    
     // Stuttgart "Modus"
     if (stuttgart)
     {
@@ -135,11 +159,23 @@ UIImage *greenelevator;
     interface.hidden = YES;
     self.map.showsBuildings = YES;
     
+    NSLog(@"%@",_map.overlays.description);
+    
+    
     NSLog(@"%lu Objekte geladen.",(unsigned long)[_fromage.description_ count]); // Kleiner Log
 //    AIzaSyAfN0znfkVve3HM5itywturlxOpF2Rl9FA // Das hier einfach ignorieren ^^
     
+//    [self drawRoute:geos];
+    
+    
+    
 }
-
+///Das ist die Startposition
+-(void)setgermany
+{
+    [self.map setRegion:startregion animated:YES];
+    
+}
 ///Stuttgart Modus
 -(void)setstuttgart
 {
@@ -190,13 +226,33 @@ UIImage *greenelevator;
     }
     
 }
+
+- (void) drawRoute:(NSArray *) path
+{
+    NSInteger numberOfSteps = 5;
+    
+    CLLocationCoordinate2D coordinates[numberOfSteps];
+    for (NSInteger index = 0; index < numberOfSteps; index++) {
+        CLLocation *location = [path objectAtIndex:index];
+        CLLocationCoordinate2D coordinate = location.coordinate;
+        coordinates[index] = coordinate;
+        printf("\n Worked");
+        
+    }
+    
+    MKPolyline *polyLine = [MKPolyline polylineWithCoordinates:coordinates count:numberOfSteps];
+    [self.map addOverlay:polyLine];
+    
+}
+
 ///Spaß mit Annotationen
 - (MKAnnotationView *)mapView:(MKMapView *)mapView viewForAnnotation:(id <MKAnnotation>)annotation
 {
+    
     //Erstmal schauen ob das der Userstandort ist
     if ([annotation isKindOfClass:[MKUserLocation class]])
     {
-        
+        ((MKUserLocation *)annotation).title = @"Hier bist du";
         return nil;
     }
     // jetzt kommt das wahrscheinlich am uneffizientesten programmierte im ganzen Code!
@@ -209,6 +265,19 @@ UIImage *greenelevator;
         
         if (annotationView)
         {
+            [UIView animateWithDuration:1.0
+                                  delay:0.2
+                                options: UIViewAnimationOptionCurveEaseOut
+                             animations:^
+             {
+                 annotationView.alpha = 0.0;
+                 annotationView.alpha = 1.0;
+             }
+                             completion:^(BOOL finished)
+             {
+                 
+             }];
+            
             return annotationView; // Mal zurückgeben. Hat schon existiert
         }
         
@@ -251,10 +320,10 @@ UIImage *greenelevator;
         }
         
         annotationView.canShowCallout = YES;
+        annotationView.detailCalloutAccessoryView = [self detailViewForAnnotation:annotationView];
         
-        
-        // Und das ganze schön langsam einblenden, dann fällt es nicht auf wie kacke das eigentlich reinploppt
-        [UIView animateWithDuration:0.5
+        // Und das ganze schön langsam einblenden, dann fällt es nicht auf wie kacke das eigentlich reinploppt //Das klappt nicht mehr so gut, seit ich reuse-teile verwende. Deshalb ist das jetzt auch am anfang :D
+        [UIView animateWithDuration:1.0
                               delay:0.2
                             options: UIViewAnimationOptionCurveEaseOut
                          animations:^
@@ -267,9 +336,65 @@ UIImage *greenelevator;
              
          }];
         
-        return annotationView; // Dann noch zurückgeben!
+        return annotationView; // Dann nur noch zurückgeben!
     }
     return nil;
+}
+- (UIButton *)yesButton {
+    UIImage *image = [UIImage imageNamed:(@"noscio100.png")];
+    
+    UIButton *button = [UIButton buttonWithType:UIButtonTypeCustom];
+    button.frame = CGRectMake(0, 0, image.size.width, image.size.height); // don't use auto layout
+    [button setImage:image forState:UIControlStateNormal];
+    button.imageView.contentMode = UIViewContentModeScaleAspectFit;
+    
+    
+    return button;
+}
+- (UIView *)detailViewForAnnotation:(MKAnnotationView *)annotation {
+    UIView *view = [[UIView alloc] init];
+    
+    view.translatesAutoresizingMaskIntoConstraints = false;
+    
+    UILabel *label = [[UILabel alloc] init];
+    label.text = [annotation.annotation subtitle];
+    
+    label.font = [UIFont systemFontOfSize:20];
+    label.translatesAutoresizingMaskIntoConstraints = false;
+    label.numberOfLines = 1;
+    
+    
+    NSString *identi;
+    identi = [annotation.annotation subtitle];
+    
+    NSString *descrip;
+    MarqueeLabel *extratext = [[MarqueeLabel alloc]initWithFrame:CGRectMake(0, 0, 120, 20)];
+    descrip = [self.fromage desforquipmentnumber:identi];
+    
+    
+    
+    if ([descrip isEqualToString:(@"")])
+    {
+        [view addSubview:extratext];
+        extratext.text = (@"Keine Beschreibung");
+        extratext.font = [UIFont systemFontOfSize:self.frame.size.height/50];
+    }
+    if (descrip)
+    {
+        [view addSubview:extratext];
+        extratext.text = descrip;
+        extratext.animationDelay = .2;
+        extratext.scrollDuration = 1.0;
+        extratext.font = [UIFont boldSystemFontOfSize:self.frame.size.height/60];
+    }
+    
+    NSDictionary *views = NSDictionaryOfVariableBindings(extratext);
+    
+//    [view addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|[label]|" options:0 metrics:nil views:views]];
+    [view addConstraint:[NSLayoutConstraint constraintWithItem:extratext attribute:NSLayoutAttributeCenterX relatedBy:NSLayoutRelationEqual toItem:view attribute:NSLayoutAttributeCenterX multiplier:1 constant:0]];
+    [view addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|[extratext]|" options:0 metrics:nil views:views]];
+    
+    return view;
 }
 
 - (UIImage *)imageWithImage:(UIImage *)image scaledToSize:(CGSize)newSize { // Bild verkleinern, sonst ist das zu groß
@@ -288,8 +413,8 @@ UIImage *greenelevator;
     {
         
     loadedonce = YES;
-        // Die Animation wird nach dem Laden der Map ausgeführt, eigentlich ganz cool
-    [UIView animateWithDuration:0.5
+        // Die Animation wird nach dem Rendern der Map ausgeführt, eigentlich ganz cool
+    [UIView animateWithDuration:0.9
                           delay:0.1
                         options: UIViewAnimationOptionCurveEaseOut
                      animations:^
@@ -306,21 +431,68 @@ UIImage *greenelevator;
      {
          self.viewc.imageviewback.hidden = YES;
          self.viewc.imageviewback = nil;
-         
+         startregion = self.map.region;
          [MBProgressHUD hideHUDForView:_viewc.view animated:YES]; // Und natürlich das HUD verstecken, sind ja mit dem Groben fertig
      }];
     }
     
 }
-
+///Error anzeigen!
+-(void)showerror
+{
+    UIAlertController *control;
+    control = [UIAlertController alertControllerWithTitle:(@"Aktion abgebrochen.") message:(@"Der Crash der App wurde verhindert. Offenbar fehlen in der ADAM-API Daten, welche für das Ausführen der gewünschten Aktion erforderlich sind. Beim Klicken auf \"In Ordnung\" werden sie wieder auf die Startposition gesetzt.") preferredStyle:UIAlertControllerStyleAlert]; // Erstellen
+    
+    UIAlertAction* inordnung = [UIAlertAction actionWithTitle:(@"In Ordnung") style:UIAlertActionStyleDefault
+                                                          handler:^(UIAlertAction * action) {
+                                                              [self setgermany]; // Das ist der Handler
+                                                          }];
+    
+    [control addAction:inordnung];
+    [self.viewc presentViewController:control animated:YES completion:nil]; // und anzeigen
+    
+    
+}
 - (void)mapView:(MKMapView *)mapView didSelectAnnotationView:(MKAnnotationView *)view // Das wird aufgerufen wenn man auf eine Annotation klickst
 {
+    int validone;
+    validone = 1;
+    if ([view.annotation isKindOfClass:[MKUserLocation class]])
+    {
+        validone = 2;
+    }
+    
+    
+    if ([[[view annotation] subtitle] isEqualToString:(@"10009296")])
+    {
+        validone = 0;
+    }
+    if ([[[view annotation] subtitle] isEqualToString:(@"10440292")])
+    {
+        validone = 0;
+    }
+    if ([[[view annotation] subtitle] isEqualToString:(@"10272242")])
+    {
+        validone = 0;
+    }
+    if (validone == 0)
+    {
+        [self.map deselectAnnotation:view.annotation animated:YES];
+        [self showerror];
+    }
+    
+    if (validone == 1)
+    {
+//        [self.map setShowsPointsOfInterest:NO];
+        
     // Dann blende ich erstmal die Credits aus
     [UIView animateWithDuration:0.5
                           delay:0.1
                         options: UIViewAnimationOptionCurveEaseOut
                      animations:^
      {
+         self.viewc.ortung.alpha = 1.0;
+         self.viewc.ortung.alpha = 0.0;
          self.viewc.credits.alpha = 1.0;
          self.viewc.credits.alpha = 0.0;
      }
@@ -334,7 +506,7 @@ UIImage *greenelevator;
     oldregion = mapView.region; // ich merke mir die Region, dass ich wieder an die Stelle springen kann wo der Nutzer vor dem Klick war
     
     MKMapCamera *newCamera=[[MKMapCamera alloc] init]; // Neue Camera für Animation mit Pitch
-    
+        
     //set a new camera angle
     [newCamera setCenterCoordinate:CLLocationCoordinate2DMake([[view annotation]coordinate].latitude,[[view annotation]coordinate].longitude)];
     
@@ -343,6 +515,7 @@ UIImage *greenelevator;
     [mapView setCamera:newCamera animated:YES]; // Mal hinfliegen
     
     // Hier wird das Bild von Google Streetview zu dem Ortsnamen geladen. Werde ich nicht erklären, ist selbsterklärend
+        
     NSString *longi;
     NSString *lati;
     
@@ -377,9 +550,61 @@ UIImage *greenelevator;
     
     [interface setimageurl:urlmaked];
     //Fertig!
+      
+        
+        NSString *identi;
+        identi = [[view annotation] subtitle]; // Jetzt seht ihr gleich warum das so wichtig ist
+        NSString *status;
+        NSString *typee;
+        typee = [self.fromage typeforquipmentnumber:identi]; // Unfassbar umständlich, ich weiß. Aber es klappt!!
+        status = [self.fromage statusforquipmentnumber:identi]; // Hier gehts auch noch
+        if ([typee isEqualToString:(@"ESCALATOR")]) //Rolltreppe
+        {
+            view.image = [UIImage imageNamed:@"costumann.png"];
+            
+            if ([status isEqualToString:(@"ACTIVE")])
+            {
+                
+                view.image = [UIImage imageNamed:@"greenann.png"];
+            }
+            
+        }
+        if ([typee isEqualToString:(@"ELEVATOR")]) // und Aufzug
+        {
+            view.image = bredelevator;
+            if ([status isEqualToString:(@"ACTIVE")])
+            {
+                view.image = bgreenelevator;
+            }
+        }
+
+        
+    }
+    
 }
 - (void)mapView:(MKMapView *)mapView didDeselectAnnotationView:(nonnull MKAnnotationView *)view // Wird beim deselecten der Annotation aufgerufen
 {
+    int validone;
+    validone = 1;
+    if ([view.annotation isKindOfClass:[MKUserLocation class]])
+    {
+        validone = 2;
+    }
+    
+    if ([[[view annotation] subtitle] isEqualToString:(@"10009296")])
+    {
+        validone = 0;
+    }
+    if ([[[view annotation] subtitle] isEqualToString:(@"10440292")])
+    {
+        validone = 0;
+    }
+    if ([[[view annotation] subtitle] isEqualToString:(@"10272242")])
+    {
+        validone = 0;
+    }
+    if (validone == 1)
+    {
     self.viewc.datenschutz.hidden = NO; // Datenschutz unhidden
     // Und jetzt reinanimieren... uuui
     [UIView animateWithDuration:1.4
@@ -387,16 +612,50 @@ UIImage *greenelevator;
                         options: UIViewAnimationOptionCurveEaseOut
                      animations:^
      {
+         NSString *identi;
+         identi = [[view annotation] subtitle]; // Jetzt seht ihr gleich warum das so wichtig ist
+         NSString *status;
+         NSString *typee;
+         typee = [self.fromage typeforquipmentnumber:identi]; // Unfassbar umständlich, ich weiß. Aber es klappt!!
+         status = [self.fromage statusforquipmentnumber:identi]; // Hier gehts auch noch
+         if ([typee isEqualToString:(@"ESCALATOR")]) //Rolltreppe
+         {
+             view.image = [UIImage imageNamed:@"costumann.png"];
+             
+             if ([status isEqualToString:(@"ACTIVE")])
+             {
+                 
+                 view.image = [UIImage imageNamed:@"greenann.png"];
+             }
+             
+         }
+         if ([typee isEqualToString:(@"ELEVATOR")]) // und Aufzug
+         {
+             view.image = redelevator;
+             if ([status isEqualToString:(@"ACTIVE")])
+             {
+                 view.image = greenelevator;
+             }
+         }
+         
          [mapView setRegion:oldregion animated:YES];
          self.viewc.credits.alpha = 0.0;
          self.viewc.credits.alpha = 1.0;
+         self.viewc.ortung.alpha = 0.0;
+         self.viewc.ortung.alpha = 1.0;
      }
                      completion:^(BOOL finished)
      {
          
      }];
-    
+    [self.map setShowsPointsOfInterest:YES];
+        
+        
     [interface sethiddennow]; // Das wird noch erklärt
+        
+        
+    }
+    
 }
 /// Das musste ich vorerst weglassen
 -(void)comeinfrombottom:(UIView*)button
@@ -420,7 +679,25 @@ UIImage *greenelevator;
     
 }
 
+
+- (CGFloat)mapView:(MKMapView *)mapView alphaForShapeAnnotation:(MKShape *)annotation
+{
+    printf("\n Trying it...");
+    
+    // Set the alpha for shape annotations to 0.5 (half opacity)
+    return 0.5f;
+}
+
+- (UIColor *)mapView:(MKMapView *)mapView strokeColorForShapeAnnotation:(MKShape *)annotation
+{
+    // Set the stroke color for shape annotations
+    return [UIColor whiteColor];
+}
+
+- (UIColor *)mapView:(MKMapView *)mapView fillColorForPolygonAnnotation:(MKPolygon *)annotation
+{
+    // Mapbox cyan fill color
+    return [UIColor colorWithRed:59.0f/255.0f green:178.0f/255.0f blue:208.0f/255.0f alpha:1.0f];
+}
+
 @end
-
-
-

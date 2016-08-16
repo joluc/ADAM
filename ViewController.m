@@ -28,6 +28,8 @@ MBProgressHUD *hud;
 @implementation ViewController
 @synthesize datenschutz;
 @synthesize credits;
+@synthesize ortung;
+
 
 - (void)viewDidLoad {
     
@@ -91,20 +93,29 @@ MBProgressHUD *hud;
 ///Die Methode hat nen blöden Namen weil ich was testen wollte, hab aber keine Lust das zu ändern - funktioniert jetzt ja
 -(void)testanother
 {
-    NSString *urlstring;
-    urlstring = (@"https://noscio.eu/ADAM/stationsdaten.json"); //Hier liegen die Aufzugsdaten
+//    NSString *urlstring;
+//    urlstring = (@"https://noscio.eu/ADAM/stationsdaten.json"); //Hier liegen die Aufzugsdaten
+//    
+//    NSURL *url=[NSURL URLWithString:urlstring];
+//    
+//    NSMutableURLRequest *request = [[NSMutableURLRequest alloc] init];
+//    [request setURL:url];
+//    [request setHTTPMethod:@"GET"];
+//    
+//    NSError *error;
+//    NSURLResponse *response;
+//    NSData *urlData=[NSURLConnection sendSynchronousRequest:request returningResponse:&response error:&error];
+//    
+//
     
-    NSURL *url=[NSURL URLWithString:urlstring];
+    NSURL *imgPath = [[NSBundle mainBundle] URLForResource:@"stationsdaten" withExtension:@"json"];
+    NSString*stringPath = [imgPath absoluteString]; //this is correct
     
-    NSMutableURLRequest *request = [[NSMutableURLRequest alloc] init];
-    [request setURL:url];
-    [request setHTTPMethod:@"GET"];
+    //you can again use it in NSURL eg if you have async loading images and your mechanism
+    //uses only url like mine (but sometimes i need local files to load)
+    NSData *data = [NSData dataWithContentsOfURL:[NSURL URLWithString:stringPath]];
     
-    NSError *error;
-    NSURLResponse *response;
-    NSData *urlData=[NSURLConnection sendSynchronousRequest:request returningResponse:&response error:&error];
-    
-    dictim = [self dicfromdata:urlData]; //Aufzugsdaten in Dictionary schieben
+    dictim = [self dicfromdata:data]; //Aufzugsdaten in Dictionary schieben
     fullele = [dictim mutableCopy];
     
     nummerext = [dictim valueForKeyPath:@"Equipment"]; //Alle Equip abgreifen
@@ -112,10 +123,7 @@ MBProgressHUD *hud;
     
     nummerbahn = [NSMutableDictionary new];
     int dreii = 0;
-    if (!error)
-    {
-        hud.detailsLabel.text = (@"Verarbeitung...");
-    }
+    
     for (NSString *key in nummerext) {
         NSString *realkey;
         realkey = [NSString stringWithFormat:@"%lld", key.longLongValue];
@@ -200,7 +208,7 @@ MBProgressHUD *hud;
         [self showprivacy];
         [[NSUserDefaults standardUserDefaults]setBool:YES forKey:(@"privacy2")];
     }
-    UIButton *ortung;
+    
 //    ortung = [[UIButton alloc] initWithFrame:CGRectMake(self.view.frame.size.width-self.view.frame.size.width/10, self.view.frame.size.height-(35+self.view.frame.size.width/15),self.view.frame.size.width/10, self.view.frame.size.width/10)];
     ortung = [[UIButton alloc] initWithFrame:CGRectMake(self.view.frame.size.width-50, self.view.frame.size.height-50,50, 50)];
     

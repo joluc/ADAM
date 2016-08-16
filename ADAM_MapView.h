@@ -20,6 +20,7 @@
 @property ViewController *viewc;
 @property(nonatomic, retain) CLLocationManager *locationManager; // Ich hasse dich
 
+
 -(void)setup;
 
 @end

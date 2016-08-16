@@ -7,6 +7,10 @@
 //
 
 #import "ADAMCom.h"
+#import "NSDictionary+NullReplacement.h"
+#import "NSArray+NullReplacement.h"
+
+
 #define URL @"https://adam.noncd.db.de/api/v1.0/facilities" //Hier ist die API der Bahn
 
 @implementation ADAMCom
@@ -36,11 +40,14 @@ ADAMerci *merci;
     NSMutableArray *state = [dicti valueForKeyPath:(@"state")];
     NSMutableArray *stationnumber = [dicti valueForKeyPath:(@"stationnumber")];
     
+    description = [[description arrayByReplacingNullsWithBlanks]mutableCopy];
     
     // ADAMerci als Datasource mit den einzelnen Werten -
     // so umgehe ich das Problem mit den unbenannten Arrays!
     // Abgerufen wird das dann anhand von dem Index, der mit
     // der Equipmentnummer festgestellt wird
+    
+    
     
     merci = [[ADAMerci alloc]init];
     merci.equip = [equip mutableCopy];
@@ -67,12 +74,13 @@ ADAMerci *merci;
     return merci;
     
 }
+
 -(NSMutableDictionary*)dicfromdata:(NSData*)responseData
 {
     
     NSError* error;
     NSMutableDictionary* json = [NSJSONSerialization JSONObjectWithData:responseData options:kNilOptions error:&error];
-//    NSLog(@"%@",json.description); // Encoding zu JSON Log
+    NSLog(@"%@",json.description); // Encoding zu JSON Log
     
     return json;
 }

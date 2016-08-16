@@ -104,16 +104,18 @@
     number = [NSNumber numberWithLong:ID.longLongValue];
     //    NSLog(@"%@",number);
     
-    int value = (int)[_description_ indexOfObject:number];
-//    NSLog(@"is on Index: %d",value);
+    NSUInteger value = [_equip indexOfObject:number];
     
+    //    NSLog(@"is on Index: %d",value);
     if (value == NSNotFound)
     {
-        return (@"Keine Beschreibung");
+        return (@"Nicht gefunden");
+        
     }
     
     NSString *state_;
-    state_ = [_type objectAtIndex:value];
+    state_ = [_description_ objectAtIndex:value];
+    
     //    NSLog(@"ID: %@",ID);
     //    NSLog(@"is marked as %@",state_);
     

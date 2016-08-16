@@ -19,6 +19,8 @@
 @property IBOutlet UIImageView *imageviewback;
 @property UIButton *datenschutz;
 @property UIButton *credits;
+@property UIButton *ortung;
+
 
 
 -(void)activateloader;

@@ -7,12 +7,12 @@
 //
 
 #import "outrepasser.h"
-
+// Das lustige hier ist eigentlich echt das outrepasser irgendwie französisch für override ist. Das hab ich
+// zwar nicht gemacht, aber "globale variablen" klang blöd
 @implementation outrepasser
 NSMutableDictionary *nummerbahnnow;
 NSMutableDictionary *fullele;
 
-// Das lustige hier ist eigentlich echt das outrepasser irgendwie französisch für override ist. Das hab ich
-// zwar nicht gemacht, aber "globale variablen" klang blöd
+
 
 @end
