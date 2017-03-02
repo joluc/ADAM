@@ -89,6 +89,7 @@
     state_ = [_state objectAtIndex:value];
 //    NSLog(@"ID: %@",ID);
 //    NSLog(@"is marked as %@",state_);
+    number = nil;
     
     
     return state_;
@@ -119,6 +120,7 @@
     //    NSLog(@"ID: %@",ID);
     //    NSLog(@"is marked as %@",state_);
     
+    number = nil;
     
     return state_;
 }
@@ -141,6 +143,8 @@
     //    NSLog(@"ID: %@",ID);
     //    NSLog(@"is marked as %@",state_);
     
+    
+    number = nil;
     
     return state_;
 }

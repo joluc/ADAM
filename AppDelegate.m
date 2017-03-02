@@ -17,13 +17,15 @@
 // Ich bin jederzeit unter jonathanlucas98@web.de erreichbar.
 // Du bist auch immer willkommen hier mitzuhelfen.
 
+// Hier werden eigentlich nur:
+// - ein MutableDic initialisiert
+
 
 @interface AppDelegate ()
 
 @end
 
 @implementation AppDelegate
-
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     // Override point for customization after application launch.
@@ -55,7 +57,7 @@
 }
 + (void)initialize {
     // Set user agent (the only problem is that we can't modify the User-Agent later in the program)
-    NSDictionary *dictionnary = [[NSDictionary alloc] initWithObjectsAndKeys:@"ADAM_by_Noscio_1.3", @"UserAgent", nil]; //Einen coolen User-Agent setzen
+    NSDictionary *dictionnary = [[NSDictionary alloc] initWithObjectsAndKeys:@"ADAM-App|Noscio|V1.4", @"UserAgent", nil]; //Einen coolen User-Agent setzen
     [[NSUserDefaults standardUserDefaults] registerDefaults:dictionnary];
     //only under MRC do we release [dictionnary release];
 }

@@ -34,9 +34,18 @@ MBProgressHUD *hud;
 - (void)viewDidLoad {
     
     
+    
+    
+    [[NSNotificationCenter defaultCenter] addObserver: self
+                                             selector: @selector(enterbackground)
+                                                 name: UIApplicationDidEnterBackgroundNotification
+                                               object: nil]; // Ruf mich an wenn du in den Background gehst, Süßer
+    
+    
     [super viewDidLoad];
     [self startupcheck]; //Überprüfe die Verbindung
 }
+
 ///Verbindung überprüfen und dann starten oder Fehlermeldeung ausgeben
 -(void)startupcheck
 {
@@ -54,6 +63,9 @@ MBProgressHUD *hud;
         NSTimer *timernew; // Kurzes Delay, dass sich das UI updaten kann
         timernew = [NSTimer scheduledTimerWithTimeInterval:0.3 target:self selector:@selector(run_error) userInfo:nil repeats:NO];
     }
+    
+    checker = nil;
+    
 }
 -(void)runner
 {
@@ -61,8 +73,14 @@ MBProgressHUD *hud;
     locationManager = [[CLLocationManager alloc] init]; // Mache dieses blöde Location Manager Zeugs
     locationManager.delegate = self;
     locationManager.desiredAccuracy = kCLLocationAccuracyNearestTenMeters;
-    
+    if ([locationManager respondsToSelector:@selector(requestWhenInUseAuthorization)])
+    {
+        [locationManager requestWhenInUseAuthorization];
+    }
+    if (![CLLocationManager locationServicesEnabled])
+    {
     [locationManager startUpdatingLocation]; //Starte Location Updates
+    }
     
     credits = [[UIButton alloc]initWithFrame:CGRectMake(0, 10, self.view.frame.size.width, 10)]; // Credits Button erstellen
     [credits setBackgroundColor:[UIColor clearColor]];
@@ -76,6 +94,7 @@ MBProgressHUD *hud;
     hud = [MBProgressHUD showHUDAddedTo:self.view animated:YES]; //HUD aktivieren und Objekt abgreifen für Modifikationen
     hud.mode = MBProgressHUDModeIndeterminate;
     hud.detailsLabel.text = (@"Lade Daten vom Server..."); //Schönen Text beim HUD setzen
+    hud.label.text = (@"Das kann ein Weilchen dauern.");
     
     
     NSTimer *timernew; // Kurzes Delay, dass sich das UI updaten kann
@@ -83,30 +102,15 @@ MBProgressHUD *hud;
     NSTimer *timernewnew; // Kurzes Delay, dass sich das UI updaten kann
     timernewnew = [NSTimer scheduledTimerWithTimeInterval:0.2 target:self selector:@selector(testanother) userInfo:nil repeats:NO];
     
-//    http://www.bahnhof.de/bahnhof-de/Lorch__Wuertt_.html?hl=lorch // Ignorieren
     [credits addTarget:self action:@selector(showcreditalert) forControlEvents:UIControlEventPrimaryActionTriggered]; // Die Action für den Credits Button setzen
     
     credits.titleLabel.textAlignment = NSTextAlignmentCenter; //Text Aligment setzen
-//    credits.titleLabel.font = [UIFont boldSystemFontOfSize:credits.titleLabel.font.pointSize];
+    
     
 }
 ///Die Methode hat nen blöden Namen weil ich was testen wollte, hab aber keine Lust das zu ändern - funktioniert jetzt ja
 -(void)testanother
 {
-//    NSString *urlstring;
-//    urlstring = (@"https://noscio.eu/ADAM/stationsdaten.json"); //Hier liegen die Aufzugsdaten
-//    
-//    NSURL *url=[NSURL URLWithString:urlstring];
-//    
-//    NSMutableURLRequest *request = [[NSMutableURLRequest alloc] init];
-//    [request setURL:url];
-//    [request setHTTPMethod:@"GET"];
-//    
-//    NSError *error;
-//    NSURLResponse *response;
-//    NSData *urlData=[NSURLConnection sendSynchronousRequest:request returningResponse:&response error:&error];
-//    
-//
     
     NSURL *imgPath = [[NSBundle mainBundle] URLForResource:@"stationsdaten" withExtension:@"json"];
     NSString*stringPath = [imgPath absoluteString]; //this is correct
@@ -136,6 +140,11 @@ MBProgressHUD *hud;
     
     nummerbahnnow = [nummerbahn mutableCopy]; // Und das ganze global schalten. Finito!
     
+    // Und hier mal wieder Speicherverwaltung
+    data = nil;
+    stringPath = nil;
+    imgPath = nil;
+    
 }
 -(NSMutableDictionary*)dicfromdata:(NSData*)responseData
 {
@@ -146,6 +155,26 @@ MBProgressHUD *hud;
     
     return json;
 }
+//MESSAGE TO USER
+-(void)presentMessagewithexit:(NSString *)message
+{
+    UIAlertController *control;
+    control = [UIAlertController alertControllerWithTitle:(@"Hinweis") message:message preferredStyle:UIAlertControllerStyleAlert];
+    
+    UIAlertAction* ok = [UIAlertAction
+                         actionWithTitle:@"App schließen"
+                         style:UIAlertActionStyleDefault
+                         handler:^(UIAlertAction * action)
+                         {
+                             NSData *data;
+                             exit(0); // CRASH IT
+                         }];
+    [control addAction:ok];
+    
+    
+    [self presentViewController:control animated:YES completion:nil];
+}
+
 ///Fehler wegen Internet anzeigen
 -(void)run_error
 {
@@ -168,14 +197,14 @@ MBProgressHUD *hud;
 -(void)run_debut
 {
     _loadingindicator = [[UIActivityIndicatorView alloc]initWithFrame:self.view.frame]; //Ladeding initializieren
-    [self activateloader];
+    [self activateloader]; //Das könnte eigentlich raus, aber vielleicht brauche ich es mal!
     
     ADAMCom *com;
     com = [[ADAMCom alloc]init]; // ADAMCom vorbereiten
     
     
     baguette = [[ADAMerci alloc]init]; //Und das ADAMerci vorbereiten
-    baguette = [com dictionary_fromADAM];
+    baguette = [com dictionary_fromADAM]; // Los!
     
     
     mapView = [[ADAM_MapView alloc]initWithFrame:self.view.frame]; // Jetzt kommt die ADAM_MapView!
@@ -183,10 +212,10 @@ MBProgressHUD *hud;
     mapView.viewc = (id)self;
     mapView.fromage = baguette; // Brot mit Käse
     
-    [self.view addSubview:mapView];
+    [self.view addSubview:mapView]; // Mal adden
     
     [mapView setup]; // aufsetzen
-    [self.view addSubview:credits];
+    [self.view addSubview:credits]; // Und adden
     
     // Hier kommt jetzt erstmal UI Gedöns
     datenschutz = [[UIButton alloc]initWithFrame:CGRectMake(self.view.frame.size.width-self.view.frame.size.width/5, self.view.frame.size.height-15,self.view.frame.size.width/5, 10)];
@@ -209,15 +238,57 @@ MBProgressHUD *hud;
         [[NSUserDefaults standardUserDefaults]setBool:YES forKey:(@"privacy2")];
     }
     
-//    ortung = [[UIButton alloc] initWithFrame:CGRectMake(self.view.frame.size.width-self.view.frame.size.width/10, self.view.frame.size.height-(35+self.view.frame.size.width/15),self.view.frame.size.width/10, self.view.frame.size.width/10)];
-    ortung = [[UIButton alloc] initWithFrame:CGRectMake(self.view.frame.size.width-50, self.view.frame.size.height-50,50, 50)];
+    if ([CLLocationManager authorizationStatus] == kCLAuthorizationStatusAuthorizedWhenInUse){
+        //    ortung = [[UIButton alloc] initWithFrame:CGRectMake(self.view.frame.size.width-self.view.frame.size.width/10, self.view.frame.size.height-(35+self.view.frame.size.width/15),self.view.frame.size.width/10, self.view.frame.size.width/10)];
+        ortung = [[UIButton alloc] initWithFrame:CGRectMake(self.view.frame.size.width-50, self.view.frame.size.height-50,50, 50)];
+        
+        [ortung setImage:[UIImage imageNamed:(@"smalladam.png")] forState:UIControlStateNormal];
+        [self.view addSubview:ortung];
+        ortung.imageView.contentMode = UIViewContentModeScaleAspectFit;
+        [ortung addTarget:self action:@selector(ortme) forControlEvents:UIControlEventPrimaryActionTriggered];
+    }
     
-    [ortung setImage:[UIImage imageNamed:(@"smalladam.png")] forState:UIControlStateNormal];
-    [self.view addSubview:ortung];
-    ortung.imageView.contentMode = UIViewContentModeScaleAspectFit;
-    [ortung addTarget:self action:@selector(ortme) forControlEvents:UIControlEventPrimaryActionTriggered];
     // Das wars!
     printf("\n UI Bereit");
+    
+    //Momentan braucht man den Datenschutz nicht noch extra anzeigen.
+    datenschutz = nil;
+//    com = nil;
+    
+    
+    if ([CLLocationManager authorizationStatus] == kCLAuthorizationStatusDenied)
+    {
+        if (![[NSUserDefaults standardUserDefaults]boolForKey:(@"ignore")])
+        {
+            //        [[UIApplication sharedApplication] openURL:[NSURL URLWithString:UIApplicationOpenSettingsURLString]];
+            UIAlertController *controller;
+            controller = [UIAlertController alertControllerWithTitle:(@"Hinweis") message:(@"Die Ortungsdienste wurden deaktiviert.") preferredStyle:UIAlertControllerStyleAlert];
+            
+            
+            UIAlertAction *action_change = [UIAlertAction actionWithTitle:(@"Zu den Einstellungen") style:UIAlertActionStyleCancel handler:^(UIAlertAction *action){
+                [[UIApplication sharedApplication] openURL:[NSURL URLWithString:UIApplicationOpenSettingsURLString]];
+            }];
+            
+            UIAlertAction *action_ignore = [UIAlertAction actionWithTitle:(@"Nicht mehr darauf hinweisen.") style:UIAlertActionStyleDestructive handler:^(UIAlertAction *action ){
+                [[NSUserDefaults standardUserDefaults]setBool:YES forKey:(@"ignore")];
+            }];
+            
+            UIAlertAction *action_later = [UIAlertAction actionWithTitle:(@"Beim nächsten App-Start darauf hinweisen") style:UIAlertActionStyleDefault handler:^(UIAlertAction *action ){
+                
+            }];
+            
+            [controller addAction:action_change];
+            [controller addAction:action_ignore];
+            [controller addAction:action_later];
+            
+            [self presentViewController:controller animated:YES completion:nil];
+            
+        }
+        
+    }
+    if ([CLLocationManager authorizationStatus] == kCLAuthorizationStatusAuthorizedWhenInUse){
+//        [self ortme];
+    }
     
     
 }
@@ -264,6 +335,7 @@ MBProgressHUD *hud;
     region.span = span;
     region.center = location;
     [mapView.map setRegion:region animated:YES];
+    
 }
 ///Datenschutzcontroller anzeigen
 -(void)showprivacy
@@ -281,22 +353,6 @@ MBProgressHUD *hud;
 {
     return YES;
 }
-//-(MKAnnotationView*) returnPointView: (CLLocationCoordinate2D) location andTitle: (NSString*) title andColor: (int) color{
-//    /*Method that acts as a point-generating machine. Takes the parameters of the location, the title, and the color of the
-//     pin, and it returns a view that holds the pin with those specified details*/
-//    
-//    printf("\n Working");
-//    
-//    
-//    MKPointAnnotation *resultPin = [[MKPointAnnotation alloc] init];
-//    MKPinAnnotationView *result = [[MKPinAnnotationView alloc] initWithAnnotation:resultPin reuseIdentifier:Nil];
-//    [resultPin setCoordinate:location];
-//    resultPin.title = title;
-//    result.pinTintColor = [UIColor greenColor];
-//    
-//    return result;
-//    
-//}
 
 // 2 unnütze Methoden
 -(void)activateloader
@@ -305,9 +361,15 @@ MBProgressHUD *hud;
 }
 -(void)deactivateloader
 {
-    
+    printf("\n Done ");
 }
 
+-(void)enterbackground
+{
+    printf("\n Uiii");
+    // Alternativ könnte man hier ein paar Dinge tun!
+
+}
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
     printf("\n Memory Warning erhalten. Dein Gerät ist scheiße"); //Nutzer beleidigen weil ich nicht effizient (genug) programmiert habe

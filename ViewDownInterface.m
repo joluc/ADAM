@@ -9,6 +9,7 @@
 #import "ViewDownInterface.h"
 #import "NosFrame.h"
 #import "outrepasser.h"
+#import "Reachability.h"
 
 //ist eigentlich alles selbsterklärend.
 @implementation ViewDownInterface
@@ -45,6 +46,8 @@ int actindex;
     [imageview removeFromSuperview];
     [loadingimage removeFromSuperview];
     self.hidden = YES;
+    framer = nil;
+    
 }
 -(void)loadforID:(NSString *)ID
 {
@@ -105,21 +108,17 @@ int actindex;
     imageview = [[UIImageView alloc]initWithFrame:self.frame];
     [self.mapviewadam addSubview:imageview];
     
-    loadingimage = [[UIActivityIndicatorView alloc]initWithFrame:self.frame];
-    loadingimage.activityIndicatorViewStyle = UIActivityIndicatorViewStyleGray;
-    loadingimage.backgroundColor = [UIColor whiteColor];
-    [self.mapviewadam addSubview:loadingimage];
-    [loadingimage startAnimating];
+    
     
     bigg = [[UILabel alloc]initWithFrame:self.frame];
-    [bigg setFont:[UIFont systemFontOfSize:self.frame.size.height/5]];
+    [bigg setFont:[UIFont boldSystemFontOfSize:self.frame.size.height/4]];
     bigg.textAlignment = NSTextAlignmentCenter;
     if ([nummerbahnnow valueForKey:ID])
     {
         bigg.text = [nummerbahnnow valueForKey:ID];
     }
     bigg.numberOfLines = 2;
-    bigg.alpha = 0.6;
+    bigg.alpha = 0.8;
     
     bigg.backgroundColor = [UIColor whiteColor];
     [self.mapviewadam addSubview:bigg];
@@ -128,8 +127,14 @@ int actindex;
 }
 -(void)setimageurl:(NSString *)url
 {
-    [self loadImage:[NSURL URLWithString:url]];
     
+            NSLog(@"The internet is working via WIFI.");
+            loadingimage = [[UIActivityIndicatorView alloc]initWithFrame:self.frame];
+            loadingimage.activityIndicatorViewStyle = UIActivityIndicatorViewStyleGray;
+            loadingimage.backgroundColor = [UIColor whiteColor];
+            [self.mapviewadam addSubview:loadingimage];
+            [loadingimage startAnimating];
+            [self loadImage:[NSURL URLWithString:url]];
 }
 - (void)loadImage:(NSURL *)imageURL
 {
@@ -148,7 +153,8 @@ int actindex;
     NSData *imageData = [[NSData alloc] initWithContentsOfURL:imageURL];
     UIImage *image = [[UIImage alloc] initWithData:imageData];
     
-    [self performSelectorOnMainThread:@selector(placeImageInUI:) withObject:image waitUntilDone:YES];
+    [self performSelectorOnMainThread:@selector(placeImageInUI:) withObject:image waitUntilDone:NO];
+    
 }
 
 - (void)placeImageInUI:(UIImage *)image

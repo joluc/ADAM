@@ -22,7 +22,8 @@
 @property UIButton *ortung;
 
 
-
+-(void)presentMessagewithexit:(NSString*)message;
+-(void)ortme;
 -(void)activateloader;
 -(void)deactivateloader;
 
