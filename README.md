@@ -1,4 +1,4 @@
-# ADAM
+# ADAM iOS
 ADAM - Ausbau der Digitalisierung im Anlagenmanagement
 
 
@@ -11,9 +11,17 @@ ganz Deutschland einsehen kann.
 
 API-Beschreibung:
 Bei ADAM handelt es sich um ein Projekt zum Ausbau der Digitalisierung im Anlagenmanagement.
-Die API ermöglicht den Abruf des Betriebszustandes ausgewählter Aufzüge der DB Station&Service AG.
+Die API ermöglicht den Abruf des Betriebszustandes ausgewählter Aufzüge der DB Station& Service AG.
 Eine Beschreibung der API steht unten zum Download bereit.
 
+## APPS:
+iOS: https://github.com/joluc/ADAM-App/ 
+
+Android: https://github.com/joluc/Adam-Android
+
+## APIS:
+FaSta-API:
+https://developer.deutschebahn.com/store/apis/info?name=FaSta-Station_Facilities_Status&version=v1&provider=DBOpenData (DB)
 ADAM-API:
 http://data.deutschebahn.com/dataset/api-adam (DB)
 
