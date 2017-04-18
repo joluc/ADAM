@@ -13,12 +13,22 @@
 #import "JFMapView.h"
 #import "FSRotatingCamera.h"
 #import <FBClusteringManager.h>
+<<<<<<< Updated upstream
+=======
+#import "HackyAnnotationView.h"
+
+>>>>>>> Stashed changes
 
 #import "WatermarkTileOverlayRenderer.h"
 #if ( OFFLINE_USE_CUSTOM_OVERLAY_RENDERER == 1)
 #import "GridTileOverlayRenderer.h"
 #endif
 
+<<<<<<< Updated upstream
+=======
+@class ViewDownInterface;
+
+>>>>>>> Stashed changes
 
 // TILE
 typedef NS_ENUM(NSInteger, CustomMapTileOverlayType) {
@@ -40,6 +50,15 @@ typedef NS_ENUM(NSInteger, CustomMapTileOverlayType) {
 @property ViewController *viewc;
 @property(nonatomic, retain) CLLocationManager *locationManager; // Ich hasse dich
 @property FBClusteringManager *clusteringManager;
+<<<<<<< Updated upstream
+=======
+@property ViewDownInterface *interface;
+@property NSMutableDictionary *stationID_equipID;
+@property NSString *given_station_name;
+@property BOOL block_moreinformation;
+
+
+>>>>>>> Stashed changes
 
 
 //TILE

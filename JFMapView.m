@@ -9,7 +9,10 @@
 #import "JFMapView.h"
 #import "GridTileOverlay.h"
 
+<<<<<<< Updated upstream
 
+=======
+>>>>>>> Stashed changes
 @implementation JFMapView
 
 -(void)scrollViewDidZoom:(UIScrollView *)scrollView {
@@ -25,7 +28,10 @@
 - (void)drawMapRect:(MKMapRect)mapRect zoomScale:(MKZoomScale)zoomScale inContext:(CGContextRef)context
 {
     printf("\n AD ");
+<<<<<<< Updated upstream
     
+=======
+>>>>>>> Stashed changes
     self.gridOverlay = [[GridTileOverlay alloc] init];
     self.gridOverlay.canReplaceMapContent=NO;
     [self addOverlay:self.gridOverlay level:MKOverlayLevelAboveLabels];

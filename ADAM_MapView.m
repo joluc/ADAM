@@ -15,22 +15,44 @@
 #import "MarqueeLabel.h"
 #import <SCLAlertView-Objective-C/SCLAlertView.h>
 #import "WildcardGestureRecognizer.h"
+<<<<<<< Updated upstream
 #import <FBClusteringManager.h>
 #import "FSRotatingCamera.h"
+=======
+#import "ViewDownInterface.h"
+#import "NosAnnot.h"
+#import "UIAufzugUpView.h"
+
+#import <FBClusteringManager.h>
+#import "FSRotatingCamera.h"
+#import <CoreData/CoreData.h>
+#import "ADAMSave+CoreDataClass.h"
+#import "InformationElevator.h"
+
+#define NO_CONNECTION @"Aktuell sind die Bahn-Server leider nicht erreichbar. Möglicherweise werden sie grade gewartet. Bitte versuche es später noch einmal."
+#define MERCATOR_RADIUS 85445659.44705395
+#define MAX_GOOGLE_LEVELS 20
+>>>>>>> Stashed changes
 
 #define MERCATOR_RADIUS 85445659.44705395
 #define MAX_GOOGLE_LEVELS 20
 
 
+<<<<<<< Updated upstream
 
+=======
+>>>>>>> Stashed changes
 BOOL clusterZoom;
 BOOL updated;
 BOOL loadedonce;
 BOOL _modifyingMap;
 BOOL selected_point;
 
+<<<<<<< Updated upstream
 
 ViewDownInterface *interface;
+=======
+>>>>>>> Stashed changes
 MKCoordinateRegion oldregion;
 MKCoordinateRegion startregion;
 NSString *USE_TILE;
@@ -41,19 +63,38 @@ UIImage *bredelevator;
 UIImage *greenelevator;
 UIImage *bgreenelevator;
 UIButton *back_camera;
+<<<<<<< Updated upstream
+=======
+UIAufzugUpView *information_aufzug_view;
+UILabel *information_aufzug_label;
+
+
+>>>>>>> Stashed changes
 
 
 NSMutableArray *points; // ALL PINS
 
 @implementation ADAM_MapView
+@synthesize interface;
 
 -(void)setup
 {
+<<<<<<< Updated upstream
     USE_TILE = (@"NO");
     // TILE BENUTZEN - DEFAULT NO
     
     bredelevator = [self imageWithImage:[UIImage imageNamed:@"elevatorinactive.png"] scaledToSize:CGSizeMake(20, 20)];
     bgreenelevator = [self imageWithImage:[UIImage imageNamed:@"elevatoractive.png"] scaledToSize:CGSizeMake(20, 20)];
+=======
+    _stationID_equipID = [[NSMutableDictionary alloc]init];
+    
+    USE_TILE = (@"NO");
+    // TILE BENUTZEN - DEFAULT NO
+    
+    bredelevator = [self imageWithImage:[UIImage imageNamed:@"elevatorinactive.png"] scaledToSize:CGSizeMake(40, 40)];
+    bgreenelevator = [self imageWithImage:[UIImage imageNamed:@"elevatoractive.png"] scaledToSize:CGSizeMake(40, 40)];
+    
+>>>>>>> Stashed changes
     
     redelevator = [self imageWithImage:[UIImage imageNamed:@"elevatorinactive.png"] scaledToSize:CGSizeMake(10, 10)]; // Ich dachte, wenn ich die Bilder einmal so speichere kann ich sie effizienter aufrufen....
     greenelevator = [self imageWithImage:[UIImage imageNamed:@"elevatoractive.png"] scaledToSize:CGSizeMake(10, 10)]; // same
@@ -72,6 +113,8 @@ NSMutableArray *points; // ALL PINS
     ///Das Interface wird eingeblendet, wenn man eine Annotation anklickt. Oh, das muss ich auch noch kommentieren -.-
     interface = [[ViewDownInterface alloc]initWithFrame:CGRectMake(0, self.frame.size.height-self.frame.size.height/7, self.frame.size.width, self.frame.size.height/7)];
     interface.bonjour = _fromage;
+    interface.adamcom_instance = _viewc.com;
+    
     userl = YES;
     
     
@@ -134,9 +177,13 @@ NSMutableArray *points; // ALL PINS
     drei = 0; // Übrigens, die counter heißen bei mir fast immer irgendwas mit drei ^^
     
     points = [[NSMutableArray alloc]init];
+<<<<<<< Updated upstream
     
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
         
+=======
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+>>>>>>> Stashed changes
         for (NSObject *coordinate2 in geos) // eine for schleife um die latitude und die longitude in ein
         {
             NSMutableDictionary *dictico;
@@ -146,6 +193,7 @@ NSMutableArray *points; // ALL PINS
             //        NSLog(@"%f",coordinate.latitude);
             //        NSLog(@"%f",coordinate.longitude);
             MKPointAnnotation *point = [[MKPointAnnotation alloc] init];
+<<<<<<< Updated upstream
             point.coordinate = coordinate;
             NSString *ident;
             //        ident = [dictico objectForKey:(@"equipmentnumber")]; // Hat nicht funktioniert, weißte
@@ -205,8 +253,77 @@ NSMutableArray *points; // ALL PINS
                 drei++;
                 
             }
+=======
             
+            point.coordinate = coordinate;
+            NSString *ident;
+            NSString *stationNummer;
+>>>>>>> Stashed changes
+            
+            //        ident = [dictico objectForKey:(@"equipmentnumber")]; // Hat nicht funktioniert, weißte
+            ident = [NSString stringWithFormat:@"%@",[dictico objectForKey:(@"equipmentnumber")]];
+            stationNummer = [NSString stringWithFormat:@"%@",[dictico objectForKey:(@"stationnumber")]];
+            
+            if ([ident isEqualToString:(@"SHOWERROR")])
+            {
+                [self showerroralert];
+            }
+            //        NSLog(@"LONG %@",ident);
+            if (![ident isEqualToString:(@"SHOWERROR")])
+            {
+                point.subtitle = ident; // Das ist echt viel wichtiger als es aussieht! Über diesen SUbtitle erkenne ich nämlich was ich dem Punkt zuweisen muss - von Bildern bis zu Beschreibungen und Koordinaten
+                
+                
+                //        NSLog(@"%@",dictico.description);
+                
+                
+                
+                point.title = [_fromage.type objectAtIndex:drei]; // Titel setzen
+                
+                
+                // Jaaa, das nennt man Speicherverwaltung!!
+                
+                [dictico removeAllObjects];
+                dictico = nil;
+                ident = nil;
+                // Übersetzen
+                if (!drei)
+                {
+                    printf("\n Es liegt ein Fehler vor!");
+                    point.subtitle = (@"10009296");
+                }
+                if ([point.title isEqualToString:(@"ELEVATOR")])
+                {
+                    NSString *creator;
+                    creator = [NSString stringWithFormat:@"%d",drei];
+                    
+                    point.title = (@"Aufzug bei Station: ");
+                    if (creator)
+                    {
+                        point.title = [point.title stringByAppendingString:creator];
+                    }
+                    
+                    creator = nil;
+                }
+                if ([point.title isEqualToString:(@"ESCALATOR")])
+                {
+                    NSString *creator;
+                    creator = [NSString stringWithFormat:@"%d",drei];
+                    point.title = (@"Aufzug bei Station: ");
+                    if (creator)
+                    {
+                        point.title = [point.title stringByAppendingString:stationNummer];
+                        
+                    }
+                    creator = nil;
+                }
+                
+                [points addObject:point];
+                drei++;
+                
+            }
         }
+<<<<<<< Updated upstream
 //        dispatch_async(dispatch_get_main_queue(), ^(void) {
 //            for (MKPointAnnotation *point in points)
 //            {
@@ -217,6 +334,19 @@ NSMutableArray *points; // ALL PINS
         
         
     });
+=======
+        //        dispatch_async(dispatch_get_main_queue(), ^(void) {
+        //            for (MKPointAnnotation *point in points)
+        //            {
+        //                [self.map addAnnotation:point];
+        //            }
+        //        });
+        self.clusteringManager = [[FBClusteringManager alloc] initWithAnnotations:points];
+    });
+//    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
+//        
+//            });
+>>>>>>> Stashed changes
     
 //    for (NSObject *coordinate2 in geos) // eine for schleife um die latitude und die longitude in ein
 //    {
@@ -311,6 +441,15 @@ NSMutableArray *points; // ALL PINS
     
     
 //    NSLog(@"%@",_map.overlays.description);
+<<<<<<< Updated upstream
+=======
+    
+    if ([_fromage.description_ count]==0)
+    {
+        
+        [self.viewc presentMessagewithexit:(NO_CONNECTION)];
+    }
+>>>>>>> Stashed changes
     
     if ([_fromage.description_ count]==0)
     {
@@ -319,6 +458,11 @@ NSMutableArray *points; // ALL PINS
     }
     NSLog(@"%lu Objekte geladen.",(unsigned long)[_fromage.description_ count]); // Kleiner Log
 //    AIzaSyAfN0znfkVve3HM5itywturlxOpF2Rl9FA // Das hier einfach ignorieren ^^
+    
+    if (self.viewc.com.loadLocal)
+    {
+        [MBProgressHUD hideHUDForView:self.viewc.view animated:true];
+    }
     
 //    [self drawRoute:geos];
     
@@ -349,11 +493,16 @@ NSMutableArray *points; // ALL PINS
     // ADD BACK BUTTON
     
     back_camera = [[UIButton alloc]initWithFrame:CGRectMake(0, 0, self.viewc.view.frame.size.width, self.viewc.view.frame.size.height/30)];
+<<<<<<< Updated upstream
+=======
+    
+>>>>>>> Stashed changes
     [back_camera setTitle:(@"Auswahl verlassen") forState:UIControlStateNormal];
     [back_camera setBackgroundColor:[UIColor blackColor]];
     [back_camera setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
     [back_camera setTitleColor:[UIColor redColor] forState:UIControlStateHighlighted];
     [back_camera addTarget:self action:@selector(unselectannot) forControlEvents:UIControlEventPrimaryActionTriggered];
+<<<<<<< Updated upstream
     [self.viewc.view addSubview:back_camera];
     back_camera.hidden = YES;
 }
@@ -361,6 +510,29 @@ NSMutableArray *points; // ALL PINS
 //DESELEKTIEREN
 -(void)unselectannot
 {
+    [self.map deselectAnnotation:[self.map selectedAnnotations].firstObject animated:YES];
+=======
+    information_aufzug_view = [[UIAufzugUpView alloc]initWithFrame:CGRectMake(0, self.viewc.view.frame.size.height/30, self.viewc.view.frame.size.width, (self.viewc.view.frame.size.height/20)+self.viewc.view.frame.size.height/30)];
+    information_aufzug_label = [[UILabel alloc]initWithFrame:information_aufzug_view.frame];
+    information_aufzug_label.textColor = [UIColor blackColor];
+    information_aufzug_label.text = (@")A HSDA DU");
+    information_aufzug_label.textAlignment = NSTextAlignmentCenter;
+    information_aufzug_label.backgroundColor = [UIColor groupTableViewBackgroundColor];
+    [self.viewc.view addSubview:back_camera];
+//    [self.viewc.view addSubview:information_aufzug_view];
+    [self.viewc.view addSubview:information_aufzug_label];
+    
+    back_camera.hidden = YES;
+    information_aufzug_label.hidden = YES;
+    
+>>>>>>> Stashed changes
+}
+
+//DESELEKTIEREN
+-(void)unselectannot
+{
+    [self.viewc shownavbar];
+    information_aufzug_view.hidden = YES;
     [self.map deselectAnnotation:[self.map selectedAnnotations].firstObject animated:YES];
 }
 ///Das ist die Startposition
@@ -453,8 +625,29 @@ NSMutableArray *points; // ALL PINS
 }
 
 ///Spaß mit Annotationen
+
 - (MKAnnotationView *)mapView:(MKMapView *)mapView viewForAnnotation:(id <MKAnnotation>)annotation
 {
+<<<<<<< Updated upstream
+    if ([annotation isKindOfClass:[FBAnnotationCluster class]]) {
+        
+        FBAnnotationCluster *cluster = (FBAnnotationCluster *)annotation;
+        int annotcount;
+        annotcount = (int)cluster.annotations.count;
+        cluster.title = [NSString stringWithFormat:@"%d",annotcount];
+=======
+    BOOL placemark;
+    
+    if ([annotation isKindOfClass:[MKPlacemark class]])
+    {
+        placemark = true;
+        return nil;
+    }
+    if (!placemark)
+    {
+    if (![annotation isKindOfClass:[MKPlacemark class]])
+    {
+        
     if ([annotation isKindOfClass:[FBAnnotationCluster class]]) {
         
         FBAnnotationCluster *cluster = (FBAnnotationCluster *)annotation;
@@ -462,11 +655,14 @@ NSMutableArray *points; // ALL PINS
         annotcount = (int)cluster.annotations.count;
         cluster.title = [NSString stringWithFormat:@"%d",annotcount];
         
+>>>>>>> Stashed changes
+        
         NSString *identifier = [NSString stringWithFormat:@"CL%d",(int)[annotation subtitle]];
         //        NSLog(@"%@",identifier);
         
         MKAnnotationView* annotationView = [mapView dequeueReusableAnnotationViewWithIdentifier:identifier];
         
+<<<<<<< Updated upstream
         annotationView = [[MKAnnotationView alloc] initWithAnnotation:annotation
                                                       reuseIdentifier:identifier];
         annotationView.image = [UIImage imageNamed:@"adam_group.png"];
@@ -481,6 +677,28 @@ NSMutableArray *points; // ALL PINS
         annotationView.canShowCallout = NO;
         return annotationView;
         
+=======
+        MKAnnotationView* annotationView = [mapView dequeueReusableAnnotationViewWithIdentifier:identifier];
+        
+        annotationView = [[MKAnnotationView alloc] initWithAnnotation:annotation
+                                                      reuseIdentifier:identifier];
+        annotationView.image = [UIImage imageNamed:@"adam_group.png"];
+        UILabel *sizeofcluster;
+        
+        
+        sizeofcluster = [[UILabel alloc]initWithFrame:CGRectMake((annotationView.frame.size.width/2)-annotationView.frame.size.height/3, 0, (annotationView.frame.size.height/3)*2, annotationView.frame.size.height)];
+        sizeofcluster.text = cluster.title;
+        sizeofcluster.font = [UIFont boldSystemFontOfSize:annotationView.frame.size.height/3];
+        sizeofcluster.numberOfLines = 0;
+        
+        sizeofcluster.textAlignment = NSTextAlignmentCenter;
+        
+        [annotationView addSubview:sizeofcluster];
+        
+        annotationView.canShowCallout = NO;
+        return annotationView;
+        
+>>>>>>> Stashed changes
     } else {
         //Erstmal schauen ob das der Userstandort ist
         if ([annotation isKindOfClass:[MKUserLocation class]])
@@ -489,11 +707,16 @@ NSMutableArray *points; // ALL PINS
             return nil;
         }
         // jetzt kommt das wahrscheinlich am uneffizientesten programmierte im ganzen Code!
+<<<<<<< Updated upstream
+=======
+        
+>>>>>>> Stashed changes
         else if ([annotation isKindOfClass:[MKPointAnnotation class]]) // use whatever annotation class you used when creating the annotation
         {
             NSString *identifier = [NSString stringWithFormat:@"An%d",(int)[annotation subtitle]];
             //        NSLog(@"%@",identifier);
             
+<<<<<<< Updated upstream
             MKAnnotationView* annotationView = [mapView dequeueReusableAnnotationViewWithIdentifier:identifier]; // Gibts das nicht schon?
             
             if (annotationView)
@@ -504,6 +727,27 @@ NSMutableArray *points; // ALL PINS
             annotationView = [[MKAnnotationView alloc] initWithAnnotation:annotation
                                                           reuseIdentifier:identifier]; // Hier muss ich es leider erstmal erstellen
             
+=======
+            NosAnnot* annotationView = [mapView dequeueReusableAnnotationViewWithIdentifier:identifier]; // Gibts das nicht schon?
+            
+//            if (annotationView)
+//            {
+//                return annotationView; // Mal zurückgeben. Hat schon existiert
+//            }
+            
+            annotationView = [[NosAnnot alloc] initWithAnnotation:annotation
+                                                          reuseIdentifier:identifier]; // Hier muss ich es leider erstmal erstellen
+            
+            if (annotation.title)
+            {
+                if (![_stationID_equipID objectForKey:annotation.subtitle])
+                {
+                    annotationView.stationID = [annotation title];
+                    [_stationID_equipID setValue:[annotation title] forKey:[annotation subtitle]]; // KEY -> EquipID
+                }
+            }
+            
+>>>>>>> Stashed changes
             NSString *identi;
             identi = [[annotationView annotation] subtitle]; // Jetzt seht ihr gleich warum das so wichtig ist
             NSString *status;
@@ -517,6 +761,7 @@ NSMutableArray *points; // ALL PINS
             //        NSLog(@"ID: %@",identi);
             
             //        NSLog(@"Status: %@",status);
+<<<<<<< Updated upstream
             
             //Jetzt noch das Bildlein setzen
             if ([typee isEqualToString:(@"ESCALATOR")]) //Rolltreppe
@@ -527,12 +772,29 @@ NSMutableArray *points; // ALL PINS
                 {
                     
                     annotationView.image = [UIImage imageNamed:@"greenann.png"];
+=======
+            NSString *bahnhofName;
+            NSString *beschreibung;
+            beschreibung = [self.fromage desforquipmentnumber:identi];
+            bahnhofName = [nummerbahnnow valueForKey:[annotation subtitle]];
+            
+            if ([typee isEqualToString:(@"ESCALATOR")]) //Rolltreppe
+            {
+                annotationView.image = [UIImage imageNamed:@"costumann.png"];
+                annotationView.infoView.status_image.image = [UIImage imageNamed:(@"costumann.png")];
+                if ([status isEqualToString:(@"ACTIVE")])
+                {
+//                    annotationView.image = [UIImage imageNamed:@"greenann.png"];
+                    annotationView.image = [UIImage imageNamed:@"greenann.png"];
+//                    annotationView.infoView.status_image.image = [UIImage imageNamed:(@"greenann.png")];
+>>>>>>> Stashed changes
                 }
                 
             }
             if ([typee isEqualToString:(@"ELEVATOR")]) // und Aufzug
             {
                 annotationView.image = redelevator;
+<<<<<<< Updated upstream
                 if ([status isEqualToString:(@"ACTIVE")])
                 {
                     annotationView.image = greenelevator;
@@ -541,6 +803,23 @@ NSMutableArray *points; // ALL PINS
             
             annotationView.canShowCallout = YES;
             annotationView.detailCalloutAccessoryView = [self detailViewForAnnotation:annotationView];
+=======
+//                annotationView.infoView.status_image.image = [UIImage imageNamed:(@"costumann.png")];
+                if ([status isEqualToString:(@"ACTIVE")])
+                {
+                    annotationView.image = greenelevator;
+//                    annotationView.infoView.status_image.image = [UIImage imageNamed:(@"greenann.png")];
+                    
+                }
+            }
+            
+            annotationView.infoView.bahnhof_name.text = bahnhofName;
+            
+            
+//            annotationView.canShowCallout = YES;
+//            annotationView.detailCalloutAccessoryView = [self detailViewForAnnotation:annotationView];
+            
+>>>>>>> Stashed changes
             
             // Und das ganze schön langsam einblenden, dann fällt es nicht auf wie kacke das eigentlich reinploppt //Das klappt nicht mehr so gut, seit ich reuse-teile verwende. Deshalb ist das jetzt auch am anfang :D
             
@@ -548,7 +827,13 @@ NSMutableArray *points; // ALL PINS
             typee = nil;
             return annotationView; // Dann nur noch zurückgeben!
         }
+<<<<<<< Updated upstream
     }
+=======
+    }
+    }
+    }
+>>>>>>> Stashed changes
 
     return nil;
 }
@@ -564,17 +849,30 @@ NSMutableArray *points; // ALL PINS
     return button;
 }
 - (UIView *)detailViewForAnnotation:(MKAnnotationView *)annotation {
+    if (![annotation.annotation isKindOfClass:[MKPlacemark class]])
+    {
     UIView *view = [[UIView alloc] init];
-    
     view.translatesAutoresizingMaskIntoConstraints = false;
     
     UILabel *label = [[UILabel alloc] init];
-    label.text = [annotation.annotation subtitle];
+//    label.text = [annotation.annotation subtitle];
+    label.text = (@"Irgendein Bahnhof");
+    
+//    view.hidden = true;
+    
+    UILabel *overLabel;
+    overLabel = [[UILabel alloc] init];
     
     label.font = [UIFont systemFontOfSize:20];
     label.translatesAutoresizingMaskIntoConstraints = false;
     label.numberOfLines = 1;
     
+    printf("\n AIUSD UABS ");
+    
+    for (UILabel *lab in annotation.subviews)
+    {
+        NSLog(@"TEXT: %@",lab.text);
+    }
     
     NSString *identi;
     identi = [annotation.annotation subtitle];
@@ -614,6 +912,8 @@ NSMutableArray *points; // ALL PINS
     [view addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|[extratext]|" options:0 metrics:nil views:views]];
     
     return view;
+    }
+    return nil;
 }
 
 - (UIImage *)imageWithImage:(UIImage *)image scaledToSize:(CGSize)newSize { // Bild verkleinern, sonst ist das zu groß
@@ -650,7 +950,7 @@ NSMutableArray *points; // ALL PINS
                      completion:^(BOOL finished)
      {
          self.viewc.imageviewback.hidden = YES;
-         self.viewc.imageviewback = nil;
+         self.viewc.imageviewback.transform = CGAffineTransformMakeScale(1, 1);
          startregion = self.map.region;
          [MBProgressHUD hideHUDForView:_viewc.view animated:YES]; // Und natürlich das HUD verstecken, sind ja mit dem Groben fertig
      }];
@@ -675,6 +975,48 @@ NSMutableArray *points; // ALL PINS
 }
 - (void)mapView:(MKMapView *)mapView didSelectAnnotationView:(MKAnnotationView *)view // Das wird aufgerufen wenn man auf eine Annotation klickst
 {
+<<<<<<< Updated upstream
+=======
+    if ([view.annotation isKindOfClass:[MKPlacemark class]])
+    {
+        _map.userInteractionEnabled = NO;
+        //        selected_point = YES;
+        //        [self.map setShowsPointsOfInterest:NO];
+        back_camera.alpha = 0.0;
+        back_camera.hidden = NO;
+        // Dann blende ich erstmal die Credits aus
+        [UIView animateWithDuration:0.5
+                              delay:0.1
+                            options: UIViewAnimationOptionCurveEaseOut
+                         animations:^
+         {
+             self.viewc.ortung.alpha = 1.0;
+             self.viewc.ortung.alpha = 0.0;
+             self.viewc.credits.alpha = 1.0;
+             self.viewc.credits.alpha = 0.0;
+             back_camera.alpha = 1.0;
+         }
+                         completion:^(BOOL finished)
+         {
+             
+         }];
+        self.viewc.datenschutz.hidden = YES;
+        
+        [self.viewc hidenavbar];
+        
+        [interface preLoad:_given_station_name];
+        
+        oldregion = mapView.region; // ich merke mir die Region, dass ich wieder an die Stelle springen kann wo der Nutzer vor dem Klick war
+        [self.rotCamera startRotatingWithCoordinate:CLLocationCoordinate2DMake([[view annotation]coordinate].latitude,[[view annotation]coordinate].longitude)heading:-1 pitch:60.0 altitude:100.0 headingStep:5];
+        
+    }
+    if (![view.annotation isKindOfClass:[MKPlacemark class]])
+    {
+    if ([view.annotation isKindOfClass:[NosAnnot class]])
+    {
+        interface.aniode = (NosAnnot*)view.annotation;
+    }
+>>>>>>> Stashed changes
     if ([view.annotation isKindOfClass:[FBAnnotationCluster class]])
     {
         clusterZoom = YES;
@@ -735,8 +1077,14 @@ NSMutableArray *points; // ALL PINS
          
      }];
     self.viewc.datenschutz.hidden = YES;
+        
+    [self.viewc hidenavbar];
+        
+    interface.stationNumber = [[view annotation] subtitle];
+        // Hacky Overlay
+        
     [interface loadforID:[[view annotation] subtitle]]; // Und lade das mit dem Subtitle ( von dem wird man noch öfter hören )
-    
+        
     oldregion = mapView.region; // ich merke mir die Region, dass ich wieder an die Stelle springen kann wo der Nutzer vor dem Klick war
     
 //    MKMapCamera *newCamera=[[MKMapCamera alloc] init]; // Neue Camera für Animation mit Pitch
@@ -795,41 +1143,102 @@ NSMutableArray *points; // ALL PINS
     //Fertig!
       
         
-        NSString *identi;
-        identi = [[view annotation] subtitle]; // Jetzt seht ihr gleich warum das so wichtig ist
-        NSString *status;
-        NSString *typee;
-        typee = [self.fromage typeforquipmentnumber:identi]; // Unfassbar umständlich, ich weiß. Aber es klappt!!
-        status = [self.fromage statusforquipmentnumber:identi]; // Hier gehts auch noch
+    NSString *identi;
+    identi = [[view annotation] subtitle]; // Jetzt seht ihr gleich warum das so wichtig ist
+    NSString *status;
+    NSString *typee;
+    typee = [self.fromage typeforquipmentnumber:identi]; // Unfassbar umständlich, ich weiß. Aber es klappt!!
+    status = [self.fromage statusforquipmentnumber:identi]; // Hier gehts auch noch
+    bool iseither;
+    iseither = false;
+        
+        
         if ([typee isEqualToString:(@"ESCALATOR")]) //Rolltreppe
         {
             view.image = [UIImage imageNamed:@"costumann.png"];
-            
+            iseither = true;
+            NSString *messageforthat;
+            messageforthat = (@"Defekte Rolltreppe");
             if ([status isEqualToString:(@"ACTIVE")])
             {
-                
+                printf("\n ROLLTREPPE SELECTED");
                 view.image = [UIImage imageNamed:@"greenann.png"];
+                messageforthat = (@"Funktionierende Rolltreppe");
             }
+            information_aufzug_label.text = messageforthat;
             
         }
         if ([typee isEqualToString:(@"ELEVATOR")]) // und Aufzug
         {
+            iseither = true;
+            
             view.image = bredelevator;
+            NSString *messageforthat;
+            messageforthat = (@"Defekter Aufzug");
             if ([status isEqualToString:(@"ACTIVE")])
             {
+                
+                messageforthat = (@"Funktionierender Aufzug");
                 view.image = bgreenelevator;
             }
+            information_aufzug_label.text = messageforthat;
         }
-
+        if (iseither)
+        {
+            information_aufzug_label.hidden = NO;
+            view.detailCalloutAccessoryView.backgroundColor = [UIColor blueColor];
+            view.leftCalloutAccessoryView.backgroundColor = [UIColor greenColor];
+            view.rightCalloutAccessoryView.backgroundColor = [UIColor redColor];
+            
+        }
         
     }
     }
+<<<<<<< Updated upstream
+=======
+    }
+>>>>>>> Stashed changes
     
     
 }
+
 - (void)mapView:(MKMapView *)mapView didDeselectAnnotationView:(nonnull MKAnnotationView *)view // Wird beim deselecten der Annotation aufgerufen
 {
     selected_point = NO;
+<<<<<<< Updated upstream
+=======
+    if ([view.annotation isKindOfClass:[MKPlacemark class]])
+    {
+        [self.rotCamera stopRotating];
+        self.viewc.datenschutz.hidden = NO; // Datenschutz unhidden
+        
+        [UIView animateWithDuration:1.4
+                              delay:0.0
+                            options: UIViewAnimationOptionCurveEaseOut
+                         animations:^
+         {
+             _map.userInteractionEnabled = YES;
+             back_camera.alpha = 0.0;
+             self.mapView.alpha = 1.0;
+             self.viewc.credits.alpha = 0.0;
+             self.viewc.credits.alpha = 1.0;
+             self.viewc.ortung.alpha = 0.0;
+             self.viewc.ortung.alpha = 1.0;
+             information_aufzug_label.hidden = true;
+         }
+                         completion:^(BOOL finished)
+         {
+             [self.mapView removeAnnotation:view.annotation];
+         }];
+        
+        [interface sethiddennow];
+        back_camera.hidden = YES;
+        [mapView setRegion:oldregion animated:YES];
+        
+    }
+    if (![view.annotation isKindOfClass:[MKPlacemark class]])
+    {
+>>>>>>> Stashed changes
     
     if (![view.annotation isKindOfClass:[FBAnnotationCluster class]])
     {
@@ -894,18 +1303,27 @@ NSMutableArray *points; // ALL PINS
          self.viewc.credits.alpha = 1.0;
          self.viewc.ortung.alpha = 0.0;
          self.viewc.ortung.alpha = 1.0;
+         information_aufzug_label.hidden = true;
      }
                      completion:^(BOOL finished)
      {
          
      }];
 //    [self.map setShowsPointsOfInterest:YES];
+<<<<<<< Updated upstream
         back_camera.hidden = YES;
+=======
+    back_camera.hidden = YES;
+>>>>>>> Stashed changes
     [mapView setRegion:oldregion animated:YES];
     [interface sethiddennow]; // Sagt dem Interface dass es verschwinden kann
         
     }
     }
+<<<<<<< Updated upstream
+=======
+    }
+>>>>>>> Stashed changes
     
 }
 /// Das musste ich vorerst weglassen - Gab ein paar Fehler!
@@ -944,7 +1362,13 @@ NSMutableArray *points; // ALL PINS
         } else {
             annotations = points;
         }
+<<<<<<< Updated upstream
         [self.clusteringManager displayAnnotations:annotations onMapView:mapView];
+=======
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+            [self.clusteringManager displayAnnotations:annotations onMapView:mapView];
+        });
+>>>>>>> Stashed changes
     }];
     }
     
@@ -1010,6 +1434,66 @@ NSMutableArray *points; // ALL PINS
     }
     
     
+<<<<<<< Updated upstream
+=======
+}
+
+-(MKOverlayRenderer *)mapView:(MKMapView *)mapView rendererForOverlay:(id<MKOverlay>)overlay {
+    
+    if([overlay isKindOfClass:[MKTileOverlay class]]) {
+        MKTileOverlay *tileOverlay = (MKTileOverlay *)overlay;
+        MKTileOverlayRenderer *renderer = nil;
+        if([tileOverlay isKindOfClass:[GridTileOverlay class]]) {
+#if ( OFFLINE_USE_CUSTOM_OVERLAY_RENDERER == 1 )
+            renderer = [[GridTileOverlayRenderer alloc] initWithTileOverlay:tileOverlay];
+#else
+            renderer = [[MKTileOverlayRenderer alloc] initWithTileOverlay:tileOverlay];
+#endif
+        } else {
+            if(self.overlayType==CustomMapTileOverlayTypeGoogle) {
+                renderer = [[WatermarkTileOverlayRenderer alloc] initWithTileOverlay:tileOverlay];
+            } else {
+                renderer = [[MKTileOverlayRenderer alloc] initWithTileOverlay:tileOverlay];
+            }
+        }
+        
+        return renderer;
+    }
+    
+    return nil;
+}
+
+
+
+// CORE DATA
+
+-(void)save
+{
+    NSManagedObjectContext *context = [self managedObjectContext];
+    // Create a new managed object
+    NSManagedObject *newDevice = [NSEntityDescription insertNewObjectForEntityForName:@"ADAMSave" inManagedObjectContext:context];
+    [newDevice setValue:self.fromage forKey:@"fromage"];
+    
+    NSError *error = nil;
+    // Save the object to persistent store
+    if (![context save:&error]) {
+        NSLog(@"Can't Save! %@ %@", error, [error localizedDescription]);
+    }
+}
+- (NSManagedObjectContext *)managedObjectContext {
+    NSManagedObjectContext *context = nil;
+    id delegate = [[UIApplication sharedApplication] delegate];
+    if ([delegate performSelector:@selector(managedObjectContext)]) {
+        context = [delegate managedObjectContext];
+    }
+    return context;
+}
+-(void)loadolddata
+{
+    NSManagedObjectContext *managedObjectContext = [self managedObjectContext];
+    NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] initWithEntityName:@"ADAMSave"];
+    self.fromage = [[managedObjectContext executeFetchRequest:fetchRequest error:nil] mutableCopy];
+>>>>>>> Stashed changes
 }
 
 -(MKOverlayRenderer *)mapView:(MKMapView *)mapView rendererForOverlay:(id<MKOverlay>)overlay {

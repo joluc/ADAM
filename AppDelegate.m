@@ -9,6 +9,8 @@
 
 #import "AppDelegate.h"
 #import "outrepasser.h"
+#import "ADAMSave+CoreDataClass.h"
+
 
 // Hallo!
 // Du darfst den Code von mir gerne benutzen...
@@ -19,6 +21,11 @@
 
 // Hier werden eigentlich nur:
 // - ein MutableDic initialisiert
+<<<<<<< Updated upstream
+=======
+// - UserAgents gesetzt
+
+>>>>>>> Stashed changes
 
 
 @interface AppDelegate ()
@@ -28,6 +35,10 @@
 @implementation AppDelegate
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
+    
+    
+    
+    
     // Override point for customization after application launch.
     nummerbahnnow = [[NSMutableDictionary alloc]init];
     
@@ -57,7 +68,11 @@
 }
 + (void)initialize {
     // Set user agent (the only problem is that we can't modify the User-Agent later in the program)
+<<<<<<< Updated upstream
     NSDictionary *dictionnary = [[NSDictionary alloc] initWithObjectsAndKeys:@"ADAM-App|Noscio|V1.4", @"UserAgent", nil]; //Einen coolen User-Agent setzen
+=======
+    NSDictionary *dictionnary = [[NSDictionary alloc] initWithObjectsAndKeys:@"ADAM-App|Noscio|V1.7", @"UserAgent", nil]; //Einen coolen User-Agent setzen
+>>>>>>> Stashed changes
     [[NSUserDefaults standardUserDefaults] registerDefaults:dictionnary];
     //only under MRC do we release [dictionnary release];
 }

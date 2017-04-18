@@ -8,8 +8,25 @@
 
 #import <Foundation/Foundation.h>
 #import "ADAMerci.h"
+@class ViewController;
 
 @interface ADAMCom : NSObject
 -(ADAMerci*)dictionary_fromADAM;
+
+@property BOOL old_api;
+@property BOOL loadLocal;
+
+@property ViewController *parent_viewcontroller;
+@property NSMutableDictionary *station_coords;
+
+-(NSMutableDictionary*)getStationInformation:(NSString*)stationID;
+-(NSMutableDictionary*)getStationInformationwithName:(NSString*)stationName; 
+-(NSString*)getStationNameforStationID:(NSString*)equip; // ROLLTREPPE
+
+-(void)setup;
+
+
+-(ADAMerci*)loadLatest;
+
 
 @end

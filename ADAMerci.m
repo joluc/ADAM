@@ -8,7 +8,6 @@
 #import "ADAMerci.h"
 #import <MapKit/MapKit.h>
 
-
 @implementation ADAMerci // Ganz wichtiges Teil
 
 //@property NSMutableArray *equip;
@@ -20,6 +19,7 @@
 //@property NSMutableArray *stationnumber;
 
 ///Gibt ein Dictionarie zurück mit den Werten aus den Arrays welche auf dem jeweiligen Index liegen. Umständliche Lösung! Aber klappt!
+
 -(NSMutableDictionary*)dicforindex:(int)index
 {
     
