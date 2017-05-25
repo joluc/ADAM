@@ -84,6 +84,8 @@ BOOL isSearching;
             searchBar.barStyle = UIBarMetricsCompact;
             searchBar.barTintColor = [UIColor whiteColor];
             searchBar.delegate = (id)self;
+            searchBar.tintColor = [UIColor whiteColor];
+            
             
             closeButton = [[UIButton alloc] initWithFrame:CGRectMake(0, 0, self.frame.size.width/7, self.frame.size.height/10)];
             [closeButton addTarget:self action:@selector(closeSearchBar) forControlEvents:UIControlEventPrimaryActionTriggered];
@@ -192,10 +194,10 @@ BOOL isSearching;
                          self.hidden = YES;
                          self.alpha = 1.0;
                          
-                         CGRect frame = CGRectMake(self.tableView.frame.origin.x,
-                                                   self.tableView.frame.origin.y,
-                                                   self.tableView.frame.size.width,
-                                                   self.frame.size.height);
+//                         CGRect frame = CGRectMake(self.tableView.frame.origin.x,
+//                                                   self.tableView.frame.origin.y,
+//                                                   self.tableView.frame.size.width,
+//                                                   self.frame.size.height);
                          self.tableView.frame = startFrame;
                          
                      }];
@@ -232,9 +234,10 @@ BOOL isSearching;
     NSLog(@"%@",dictiforcell.description);
     
     NSString *name_station = cell.textLabel.text;
-
+    
     NSString *message_for_user;
     message_for_user = (@"Möchtest du zu der Station ");
+    if (!name_station){name_station = (@"welche du angeklickt hast ");}
     message_for_user = [message_for_user stringByAppendingString:name_station];
     message_for_user = [message_for_user stringByAppendingString:(@" mehr Informationen erhalten?")];
     
@@ -259,6 +262,8 @@ BOOL isSearching;
         HUD3 = [MBProgressHUD showHUDAddedTo:self.parent_search.view animated:true];
         HUD3.detailsLabel.text = (@"Kombiniere Datensätze...");
         [self.parent_search.mapView.map setRegion:region animated:NO];
+        [self.parent_search.mapView.mapView setCenterCoordinate:coordinateforstation animated:true];
+        
         dispatch_async(dispatch_get_main_queue(), ^{
             doingthingpleaswait.hidden = NO;
             doingthingpleaswait.backgroundColor = [UIColor blackColor];
@@ -295,7 +300,9 @@ BOOL isSearching;
     [HUD3 hideAnimated:YES];
     doingthingpleaswait.hidden = true;
     [self.parent_search.mapView.map addAnnotation:placemark];
-    [self.parent_search.mapView.map selectAnnotation:placemark animated:false];
+    
+    printf("/n SELECTED LATER");
+    
 }
 // SEARCHBAR
 - (void)searchBarTextDidBeginEditing:(UISearchBar *)searchBar {
@@ -331,6 +338,7 @@ BOOL isSearching;
 }
 
 - (void)searchBarCancelButtonClicked:(UISearchBar *)searchBar {
+    
     [searchBar resignFirstResponder];
 }
 

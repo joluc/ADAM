@@ -9,7 +9,11 @@
 
 #import "AppDelegate.h"
 #import "outrepasser.h"
-#import "ADAMSave+CoreDataClass.h"
+
+@import Firebase;
+@import FirebaseAuth;
+@import FirebaseCrash;
+
 
 
 // Hallo!
@@ -21,11 +25,8 @@
 
 // Hier werden eigentlich nur:
 // - ein MutableDic initialisiert
-<<<<<<< Updated upstream
-=======
 // - UserAgents gesetzt
 
->>>>>>> Stashed changes
 
 
 @interface AppDelegate ()
@@ -36,11 +37,22 @@
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     
+    [FIRApp configure];
+    // Anonymisierung von Nutzer!!
     
-    
+    [[FIRAuth auth]
+     signInAnonymouslyWithCompletion:^(FIRUser *_Nullable user, NSError *_Nullable error) {
+         
+         [[NSUserDefaults standardUserDefaults]setObject:user.uid forKey:(@"userID")];
+         [[NSUserDefaults standardUserDefaults]synchronize];
+         
+     }];
     
     // Override point for customization after application launch.
     nummerbahnnow = [[NSMutableDictionary alloc]init];
+    
+    
+    
     
     return YES;
 }
@@ -53,6 +65,7 @@
 - (void)applicationDidEnterBackground:(UIApplication *)application {
     // Use this method to release shared resources, save user data, invalidate timers, and store enough application state information to restore your application to its current state in case it is terminated later.
     // If your application supports background execution, this method is called instead of applicationWillTerminate: when the user quits.
+    
 }
 
 - (void)applicationWillEnterForeground:(UIApplication *)application {
@@ -68,11 +81,7 @@
 }
 + (void)initialize {
     // Set user agent (the only problem is that we can't modify the User-Agent later in the program)
-<<<<<<< Updated upstream
-    NSDictionary *dictionnary = [[NSDictionary alloc] initWithObjectsAndKeys:@"ADAM-App|Noscio|V1.4", @"UserAgent", nil]; //Einen coolen User-Agent setzen
-=======
     NSDictionary *dictionnary = [[NSDictionary alloc] initWithObjectsAndKeys:@"ADAM-App|Noscio|V1.7", @"UserAgent", nil]; //Einen coolen User-Agent setzen
->>>>>>> Stashed changes
     [[NSUserDefaults standardUserDefaults] registerDefaults:dictionnary];
     //only under MRC do we release [dictionnary release];
 }

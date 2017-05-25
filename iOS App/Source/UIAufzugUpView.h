@@ -15,3 +15,4 @@
 -(void)setText:(NSString*)string;
 
 @end
+
