@@ -1,7 +1,7 @@
-<b>Achtung: Code ist out of date. Die im AppStore zu findende Version, welche in Swift geschrieben ist, wird hier in den nächsten Wochen verfügbar sein.</b>
+# Die aktuelle App findet sich im Store und wurde in Swift geschrieben.
 <br>
 
-# ADAM iOS
+### ADAM iOS
 ADAM - Ausbau der Digitalisierung im Anlagenmanagement
 
 
